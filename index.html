@@ -16,12 +16,13 @@
             --text-sub: #8e8e93;
             --border-main: #eef0f2;
             
-            /* 미감 좋고 덜 쨍한 파스텔 & 회색조 톤다운 컬러 파렛트 */
-            --color-sora: #7b9acc;       /* 상체 및 메인 포인트 (차분한 파스텔 소라) */
-            --color-forest: #719a84;     /* 하체 (톤다운된 세이지 그린) */
-            --color-dahong: #d98282;     /* 유산소 (차분한 톤다운 인디핑크/다홍) */
-            --color-pt: #e5e7eb;         /* PT 배경 (연회색) */
-            --color-sat: #6b82a8;        /* 토요일 (덜 쨍한 둔탁한 파란색) */
+            --color-sora: #7b9acc;
+            --color-forest: #719a84;
+            --color-dahong: #d98282;
+            --color-pt: #e5e7eb;
+            --color-pt-border: #9ca3af; /* 3번: 더 진한 회색 테두리 */
+            --color-sat: #6b82a8;
+            --color-bright-blue: #2563eb; /* 11번: 쨍한 파란색 */
 
             --radius-md: 8px;
             --radius-btn: 4px;
@@ -58,6 +59,7 @@
             margin-bottom: 0 !important;
             padding-right: 40px;
         }
+        /* 6번: 깔끔한 회색 실루엣 아이콘 버튼 */
         .toggle-pw-btn {
             position: absolute;
             right: 10px;
@@ -65,25 +67,40 @@
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: var(--text-sub);
-            font-size: 1rem;
-            cursor: pointer;
+            color: #8e8e93;
             padding: 4px;
-        }
-
-        /* 이메일 입력을 위한 그리드 */
-        .email-input-group {
             display: flex;
             align-items: center;
-            gap: 4px;
-            margin-bottom: 10px;
+            justify-content: center;
         }
-        .email-input-group input, .email-input-group select {
-            padding: 12px 8px;
+        .toggle-pw-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: #8e8e93;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* 9번: 입력창 간격 및 겹침 방지 CSS */
+        .select-group-3 {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        .select-group-3 select, .select-group-3 input {
+            flex: 1;
+            min-width: 0;
+            padding: 10px 6px;
             border: 1px solid #e1e4e8;
             border-radius: var(--radius-md);
             font-size: 0.82rem;
             background: #fafafa;
+            margin: 0;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         /* 인증 화면 */
@@ -105,6 +122,7 @@
             border-radius: var(--radius-md);
             font-size: 0.85rem;
             background: #fafafa;
+            box-sizing: border-box;
         }
         .auth-btn {
             width: 100%;
@@ -117,7 +135,6 @@
         .btn-primary { background: var(--color-sora); color: white; }
         .btn-secondary { background: #f0f0f2; color: var(--text-main); margin-top: 8px; }
 
-        /* 메인 헤더 & MY 버튼 (17번: 중앙 정렬 / 11번: 실루엣 아이콘) */
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; position: relative; }
         header h1 { font-size: 1.2rem; font-weight: 700; margin: 0 auto; }
         .my-icon-btn {
@@ -153,7 +170,7 @@
         .tab-content { display: none; background: var(--container-bg); padding: 16px; border-radius: 14px; border: 1px solid var(--border-main); }
         .tab-content.active { display: block; }
 
-        /* 달력 스타일 (9번 연한 회색 화살표 / 10번 덜 쨍한 토요일 파란색) */
+        /* 달력 스타일 */
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .calendar-header button { background: none; border: none; color: #b0b0b8; font-size: 1.1rem; padding: 2px 8px; }
         .calendar-header h2 { margin: 0; font-size: 1.05rem; font-weight: 700; }
@@ -177,25 +194,36 @@
         .day-number.saturday { color: var(--color-sat) !important; }
         .holiday-name { font-size: 0.5rem; color: #d98282; font-weight: 500; margin-top: 1px; }
 
-        .day-center-wrapper { width: 100%; display: flex; flex-direction: column; gap: 2px; margin-top: 3px; }
+        /* 4번: 날짜 칸 가운데 정렬 컨테이너 */
+        .day-center-wrapper { 
+            width: 100%; 
+            flex: 1;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 2px; 
+        }
         
-        /* 운동 구분 태그 및 직사각형 모서리 */
+        /* 운동 구분 태그 */
         .tag-pill { 
             display: flex; align-items: center; justify-content: center; 
             height: 13px; width: 100%; border-radius: 0px; 
             font-size: 0.55rem; font-weight: 600; color: #ffffff; text-align: center;
         }
-        .tag-pt { background-color: var(--color-pt); color: #2b2b2b; border: 1px solid #d1d5db; height: 13px; }
+        /* 3번: pt 네모 박스 테두리 진하게 */
+        .tag-pt { background-color: var(--color-pt); color: #2b2b2b; border: 1px solid var(--color-pt-border); height: 13px; }
         .tag-upper { background-color: var(--color-sora); }
         .tag-lower { background-color: var(--color-forest); }
         .tag-cardio { background-color: var(--color-dahong); }
 
-        /* 하단 요약 (24번: 수치 비율 미세 조정) */
+        /* 하단 요약 */
         .achievement-container { text-align: center; margin-top: 16px; }
         .achievement-text { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
-        .sora-highlight { color: var(--color-sora); font-weight: 700; }
-        .percent-subtext { color: #8e8e93; font-size: 0.76rem; font-weight: 400; }
-        .quote-text { font-size: 0.8rem; color: #666666; margin-top: 6px; font-weight: 500; }
+        /* 11번: 쨍한 파란색 스타일 */
+        .blue-highlight { color: var(--color-bright-blue); font-weight: 700; }
+        .percent-subtext { color: var(--color-bright-blue); font-size: 0.85rem; font-weight: 700; margin-left: 0px; }
+        .quote-text { font-size: 0.8rem; color: #555; margin-top: 6px; font-weight: 600; }
 
         .calendar-action-btns { display: flex; gap: 8px; margin-top: 14px; }
         .calendar-action-btn { flex: 1; padding: 9px; background: #f0f0f2; border: none; border-radius: var(--radius-md); font-size: 0.78rem; font-weight: 600; color: #444; }
@@ -207,20 +235,31 @@
         .close-modal { position: absolute; top: 14px; right: 14px; background: none; border: none; font-size: 1.2rem; color: var(--text-sub); }
         .modal-header h3 { margin: 0 0 14px 0; font-size: 1rem; font-weight: 700; }
 
-        /* 7번 & 8번: 태그 선택기 크기 완전 동일화 + PT 글자색 검정 */
         .tag-selector { display: flex; gap: 6px; margin-bottom: 12px; }
         .tag-btn { flex: 1; height: 34px; border-radius: 0px; border: none; font-size: 0.8rem; font-weight: 600; color: #ffffff; opacity: 0.4; }
         .tag-btn.selected { opacity: 1; }
-        .btn-pt { background-color: var(--color-pt); color: #2b2b2b; border: 1px solid #d1d5db; }
+        .btn-pt { background-color: var(--color-pt); color: #2b2b2b; border: 1px solid var(--color-pt-border); }
         .btn-pt.selected { opacity: 1; background-color: #d1d5db; color: #000000; }
         .btn-upper { background-color: var(--color-sora); }
         .btn-lower { background-color: var(--color-forest); }
         .btn-cardio { background-color: var(--color-dahong); }
 
-        .workout-input-group { display: flex; gap: 6px; margin-bottom: 6px; }
-        .workout-input-group input, .workout-input-group select { flex: 1; min-width: 0; padding: 9px; border: 1px solid #e1e4e8; border-radius: 6px; font-size: 0.8rem; background-color: #fafafa; }
+        /* 9번: 날짜 입력 부분 테두리 겹침 방지 */
+        .workout-input-group { display: flex; gap: 6px; margin-bottom: 6px; width: 100%; }
+        .workout-input-group input, .workout-input-group select { 
+            flex: 1; 
+            min-width: 0; 
+            padding: 9px; 
+            border: 1px solid #e1e4e8; 
+            border-radius: 6px; 
+            font-size: 0.8rem; 
+            background-color: #fafafa; 
+            box-sizing: border-box;
+            margin: 0;
+            -webkit-appearance: none;
+            appearance: none;
+        }
         
-        /* 19번: 추가 버튼 짙은 회색 통일 */
         .add-workout-btn { width: 100%; padding: 9px; background-color: #55555d; color: #ffffff; border: none; border-radius: var(--radius-btn); font-weight: 600; font-size: 0.8rem; }
 
         .daily-log-list { max-height: 120px; overflow-y: auto; list-style: none; padding: 0; margin: 10px 0 0 0; display: flex; flex-direction: column; gap: 4px; }
@@ -229,25 +268,39 @@
 
         .modal-save-btn { width: 100%; margin-top: 14px; padding: 11px; background: #2b2b2b; color: #ffffff; border: none; border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; }
 
-        /* 21번: 인바디 그리드 넓히기 및 간격 패딩 정돈 */
         .sub-tabs { display: flex; background: #f0f0f2; padding: 2px; border-radius: 6px; margin-bottom: 12px; }
         .sub-tab-btn { flex: 1; padding: 7px; text-align: center; background: none; border: none; border-radius: 5px; color: var(--text-sub); font-weight: 600; font-size: 0.78rem; }
         .sub-tab-btn.active { background-color: #ffffff; color: var(--text-main); }
 
+        /* 9번: 인바디 영역 박스 및 날짜 겹침 방지 */
         .inbody-input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .inbody-input-grid input { width: 100%; padding: 9px; border: 1px solid #e1e4e8; border-radius: 6px; font-size: 0.78rem; background: #fafafa; }
+        .inbody-input-grid input, .inbody-input-grid select { 
+            width: 100%; 
+            min-width: 0;
+            padding: 9px; 
+            border: 1px solid #e1e4e8; 
+            border-radius: 6px; 
+            font-size: 0.78rem; 
+            background: #fafafa; 
+            box-sizing: border-box;
+            margin: 0;
+            -webkit-appearance: none;
+            appearance: none;
+        }
         .inbody-input-grid button { grid-column: span 2; padding: 10px; background-color: var(--color-sora); color: #ffffff; border: none; border-radius: var(--radius-btn); font-weight: 600; font-size: 0.8rem; }
 
-        .chart-container { position: relative; height: 210px; width: 100%; margin: 10px 0; }
+        .chart-container { position: relative; height: 210px; width: 100%; margin: 10px 0; cursor: pointer; }
 
-        /* 20번: 감량 목표 카드 (채워지는 게 아니라 직관적으로 남은 체중 감량 상태 표시) */
-        .goal-section { background: #f9fbfd; border: 1px solid #e1e9f5; padding: 14px; border-radius: 10px; margin-top: 14px; text-align: center; }
-        .goal-text { font-size: 0.85rem; font-weight: 700; color: #2b2b2b; }
-        .weight-status-container { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.75rem; color: #666; }
-        .progress-bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 6px; position: relative; }
-        .progress-bar-fill { height: 100%; background: var(--color-sora); width: 0%; transition: width 0.4s ease; }
+        /* 8번: 문장 강조형 목표 카드 (게이지 제거) */
+        .goal-section { background: #f9fbfd; border: 1px solid #e1e9f5; padding: 18px 14px; border-radius: 12px; margin-top: 14px; text-align: center; }
+        .goal-text-title { font-size: 1rem; font-weight: 700; color: #2b2b2b; margin-bottom: 8px; }
+        .goal-highlight-text { font-size: 1.25rem; font-weight: 800; color: var(--color-sora); margin: 6px 0; }
+        .weight-status-container { display: flex; justify-content: center; gap: 16px; margin-top: 8px; font-size: 0.8rem; color: #666; }
 
-        textarea.diary-input { width: 100%; height: 60px; border: 1px solid #e1e4e8; border-radius: 6px; padding: 8px; font-size: 0.78rem; margin-top: 4px; resize: none; background: #fafafa; }
+        /* 13번: 일기 멘트 placeholder 스타일 */
+        textarea.diary-input { width: 100%; height: 60px; border: 1px solid #e1e4e8; border-radius: 6px; padding: 8px; font-size: 0.78rem; margin-top: 4px; resize: none; background: #fafafa; box-sizing: border-box; }
+        textarea.diary-input::placeholder { color: #b0b0b8; font-size: 0.78rem; }
+
         .list-modal-card { background: #f9f9fa; border: 1px solid var(--border-main); border-radius: 6px; padding: 10px; margin-bottom: 8px; font-size: 0.78rem; }
         .list-modal-card .head { color: var(--color-sora); font-weight: 700; margin-bottom: 4px; }
     </style>
@@ -255,26 +308,18 @@
 <body>
 
 <div class="app-container">
-    <!-- 로그인 화면 -->
+    <!-- 로그인 화면 (2번: 도메인 없이 전체 수기입력) -->
     <div id="auth-screen" class="auth-container">
         <h2>운동 기록</h2>
         
-        <div class="email-input-group">
-            <input type="text" id="auth-email-id" placeholder="아이디" style="flex: 1.2;">
-            <span>@</span>
-            <input type="text" id="auth-email-domain-custom" placeholder="직접입력" style="flex: 1; display: none;">
-            <select id="auth-email-domain-select" style="flex: 1;" onchange="handleDomainSelectChange('auth')">
-                <option value="naver.com">naver.com</option>
-                <option value="gmail.com">gmail.com</option>
-                <option value="daum.net">daum.net</option>
-                <option value="hanmail.net">hanmail.net</option>
-                <option value="custom">직접입력</option>
-            </select>
-        </div>
+        <input type="email" id="auth-email-full" class="auth-input" placeholder="이메일 입력 (example@naver.com)">
 
         <div class="pw-wrapper">
             <input type="password" id="auth-password" class="auth-input" placeholder="비밀번호">
-            <button type="button" class="toggle-pw-btn" onclick="togglePasswordVisibility('auth-password', this)">👁</button>
+            <!-- 6번: 회색 실루엣 눈 아이콘 -->
+            <button type="button" class="toggle-pw-btn" onclick="togglePasswordVisibility('auth-password', this)">
+                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
         </div>
         
         <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin: 8px 0 14px 0; font-size: 0.8rem; color: var(--text-sub);">
@@ -298,10 +343,9 @@
             </button>
         </header>
 
-        <!-- 18번: 탭 이름 변경 -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="openTab('calendar-tab')">운동 달력</button>
-            <button class="tab-btn" onclick="openTab('inbody-tab')">인바디 기록</button>
+            <button class="tab-btn active" id="btn-tab-calendar" onclick="openTab('calendar-tab')">운동 달력</button>
+            <button class="tab-btn" id="btn-tab-inbody" onclick="openTab('inbody-tab')">인바디 기록</button>
         </div>
 
         <!-- 달력 탭 -->
@@ -313,14 +357,15 @@
             </div>
             <div class="calendar-grid" id="calendar-grid"></div>
 
+            <!-- 11번, 14번: 쨍한 파란색 / 띄어쓰기 없이 붙은 % / 깔끔한 호칭 -->
             <div class="achievement-container">
                 <div class="achievement-text">
-                    <span id="user-name-display">효은님</span>, 이번 달 <span class="sora-highlight" id="days-in-month">0일</span> 중 <span class="sora-highlight" id="workout-days">0일</span> <span id="workout-percent" class="percent-subtext">(0%)</span> 운동했어요!
+                    <span id="user-name-display">효은님</span> 이번 달 <span class="blue-highlight" id="days-in-month">0일</span> 중 <span class="blue-highlight" id="workout-days">0일</span><span id="workout-percent" class="percent-subtext">(0%)</span> 운동했어요!
                 </div>
-                <div class="quote-text" id="quote-text-display">역시 오늘도 해낼 줄 알았어요!</div>
+                <!-- 5번, 12번: 밝고 다양해진 응원 멘트 -->
+                <div class="quote-text" id="quote-text-display">오늘도 파이팅이에요! 🔥</div>
             </div>
 
-            <!-- 2번: 띄어쓰기 정돈 및 이모지 삭제 -->
             <div class="calendar-action-btns">
                 <button class="calendar-action-btn" onclick="openFullListModal()">운동목록 전체 보기</button>
                 <button class="calendar-action-btn" onclick="openFullDiaryModal()">운동일기 전체 보기</button>
@@ -334,19 +379,28 @@
                 <button class="sub-tab-btn" onclick="openSubTab('obesity-view')">비만 분석</button>
             </div>
 
+            <!-- 9번: 날짜 셀렉터 테두리 겹침 방지 적용 -->
             <div id="muscle-fat-view" class="sub-tab-content">
                 <div class="inbody-input-grid">
-                    <input type="date" class="inbody-date-input">
+                    <div class="select-group-3" style="grid-column: span 2; margin-bottom:0;">
+                        <select id="inbody-year-mf"></select>
+                        <select id="inbody-month-mf"></select>
+                        <select id="inbody-day-mf"></select>
+                    </div>
                     <input type="number" class="inbody-weight-input" placeholder="체중(kg)" step="0.1">
                     <input type="number" class="inbody-muscle-input" placeholder="골격근량(kg)" step="0.1">
-                    <input type="number" class="inbody-fat-input" placeholder="체지방량(kg)" step="0.1">
+                    <input type="number" class="inbody-fat-input" placeholder="체지방량(kg)" step="0.1" style="grid-column: span 2;">
                     <button onclick="addInBodyRecord('muscle-fat')">기록 저장</button>
                 </div>
             </div>
 
             <div id="obesity-view" class="sub-tab-content" style="display:none;">
                 <div class="inbody-input-grid">
-                    <input type="date" class="inbody-date-input-obesity">
+                    <div class="select-group-3" style="grid-column: span 2; margin-bottom:0;">
+                        <select id="inbody-year-ob"></select>
+                        <select id="inbody-month-ob"></select>
+                        <select id="inbody-day-ob"></select>
+                    </div>
                     <input type="number" class="inbody-bmi-input" placeholder="BMI" step="0.1">
                     <input type="number" class="inbody-fatpct-input" placeholder="체지방률(%)" step="0.1">
                     <button onclick="addInBodyRecord('obesity')">기록 저장</button>
@@ -357,59 +411,52 @@
                 <canvas id="inbodyChart"></canvas>
             </div>
 
-            <!-- 20번: 수정된 목표 체중 카드 -->
+            <!-- 8번: 게이지 제거 및 문장 강조 카드 -->
             <div class="goal-section">
-                <div class="goal-text" id="goal-remaining-text">목표 체중까지 0kg 남았어요.</div>
+                <div class="goal-text-title">체중 감량 목표</div>
+                <div class="goal-highlight-text" id="goal-remaining-text">목표 체중까지 0kg 남았어요! 💪</div>
                 <div class="weight-status-container">
                     <span>현재 <strong id="current-weight-val">0kg</strong></span>
+                    <span style="color:#ccc;">|</span>
                     <span>목표 <strong id="target-weight-val">0kg</strong></span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" id="goal-progress-bar"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 회원가입 모달 -->
+<!-- 회원가입 모달 (1번: 연/월/일 개별 선택 / 9번: 입력창 겹침 방지) -->
 <div class="modal" id="signup-modal">
     <div class="modal-content">
         <button class="close-modal" onclick="closeSignupModal()">×</button>
         <div class="modal-header"><h3>회원가입</h3></div>
         
-        <!-- 23번: 이름 예시 김헬짱 -->
         <input type="text" id="signup-name" class="auth-input" placeholder="이름 (예: 김헬짱)">
         
-        <!-- 12번: 생년월일 입력 및 나이 자동 계산 -->
+        <!-- 1번: 연, 월, 일 각각 선택할 수 있는 드롭다운 -->
         <div style="font-size:0.75rem; color:#666; margin: 2px 0 4px 2px;">생년월일</div>
-        <input type="date" id="signup-birthdate" class="auth-input">
-        
-        <!-- 13번: 이메일 도메인 선택/직접입력 분리 -->
-        <div class="email-input-group">
-            <input type="text" id="signup-email-id" placeholder="아이디" style="flex: 1.2;">
-            <span>@</span>
-            <input type="text" id="signup-email-domain-custom" placeholder="직접입력" style="flex: 1; display: none;">
-            <select id="signup-email-domain-select" style="flex: 1;" onchange="handleDomainSelectChange('signup')">
-                <option value="naver.com">naver.com</option>
-                <option value="gmail.com">gmail.com</option>
-                <option value="daum.net">daum.net</option>
-                <option value="hanmail.net">hanmail.net</option>
-                <option value="custom">직접입력</option>
-            </select>
+        <div class="select-group-3">
+            <select id="signup-birth-year"></select>
+            <select id="signup-birth-month"></select>
+            <select id="signup-birth-day"></select>
         </div>
+        
+        <input type="email" id="signup-email-full" class="auth-input" placeholder="이메일 주소">
 
-        <!-- 14번 & 15번: 눈 모양 버튼 및 비밀번호 확인 -->
+        <!-- 6번: 회색 실루엣 아이콘 적용 -->
         <div class="pw-wrapper">
             <input type="password" id="signup-password" class="auth-input" placeholder="비밀번호">
-            <button type="button" class="toggle-pw-btn" onclick="togglePasswordVisibility('signup-password', this)">👁</button>
+            <button type="button" class="toggle-pw-btn" onclick="togglePasswordVisibility('signup-password', this)">
+                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
         </div>
         <div class="pw-wrapper">
             <input type="password" id="signup-password-confirm" class="auth-input" placeholder="비밀번호 확인">
-            <button type="button" class="toggle-pw-btn" onclick="togglePasswordVisibility('signup-password-confirm', this)">👁</button>
+            <button type="button" class="toggle-pw-btn" onclick="togglePasswordVisibility('signup-password-confirm', this)">
+                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
         </div>
         
-        <!-- 16번: 키, 목표체중 명확한 라벨링 -->
         <div style="display:flex; gap:6px;">
             <input type="number" id="signup-height" class="auth-input" placeholder="키(cm)">
             <input type="number" id="signup-weight" class="auth-input" placeholder="현재 체중(kg)" step="0.1">
@@ -420,7 +467,7 @@
     </div>
 </div>
 
-<!-- MY (마이페이지) 모달 (16번: 키, 목표몸무게 단위 및 라벨 정돈) -->
+<!-- MY (마이페이지) 모달 -->
 <div class="modal" id="mypage-modal">
     <div class="modal-content">
         <button class="close-modal" onclick="closeMyPageModal()">×</button>
@@ -454,7 +501,6 @@
 <!-- 운동 기록 및 일기 입력 모달 -->
 <div class="modal" id="workout-modal">
     <div class="modal-content">
-        <!-- 5번: X버튼 눌러 취소할 시 저장 안 됨 -->
         <button class="close-modal" onclick="cancelWorkoutModal()">×</button>
         <div class="modal-header"><h3 id="modal-date-title">운동 기록</h3></div>
         
@@ -465,7 +511,6 @@
             <button class="tag-btn btn-cardio" id="btn-cardio" onclick="toggleTag('유산소')">유산소</button>
         </div>
 
-        <!-- 19번: 추가 제거 및 어두운 회색 버튼 -->
         <div id="detailed-inputs">
             <div style="font-size:0.8rem; font-weight:700; margin:8px 0 4px 0;">웨이트 운동</div>
             <div class="workout-input-group">
@@ -500,14 +545,14 @@
             <button class="add-workout-btn" onclick="addCardioWorkout()">유산소 등록</button>
         </div>
 
+        <!-- 13번: 운동일기 연한 색 placeholder -->
         <div style="margin-top:10px;">
             <div style="font-size:0.8rem; font-weight:700;">운동 일기</div>
-            <textarea id="modal-diary-text" class="diary-input" placeholder="오늘 운동 컨디션을 간단히 적어보세요."></textarea>
+            <textarea id="modal-diary-text" class="diary-input" placeholder="오늘 운동은 어떠셨나요?"></textarea>
         </div>
 
         <ul class="daily-log-list" id="daily-log-list"></ul>
 
-        <!-- 5번: '저장' 버튼을 누를 때만 적용 -->
         <button class="modal-save-btn" onclick="saveAndCloseWorkoutModal()">저장</button>
     </div>
 </div>
@@ -552,25 +597,25 @@
     let userProfile = { name: '회원', age: 25, height: 165, target_weight: 50 };
     let currentDate = new Date();
     let selectedDateStr = null;
-    let tempModalData = null; // 5번: 모달임시저장객체
+    let tempModalData = null;
     let inbodyChart = null;
     let currentInbodyView = 'muscle-fat';
     let workoutData = {};
     let inbodyRecords = [];
     let selectedInbodyRecordId = null;
 
-    // 3번: 큰따옴표가 없는 감성 응원 멘트 10종
+    // 5번, 12번: 아주 + 밝고 발랄한 응원 멘트 다채롭게 반영 (이모티콘 포함)
     const MOTIVATIONAL_QUOTES = [
-        "역시 오늘도 해낼 줄 알았어요!",
-        "차곡차곡 쌓인 오늘이 멋진 결과를 만듭니다.",
-        "오늘 흘린 땀방울이 단단한 내일을 만들어줄 거예요.",
-        "스스로와의 약속을 지켜낸 당신이 정말 자랑스러워요.",
-        "꾸준함이야말로 가장 위대한 재능입니다.",
-        "지치지 않고 걸어가는 모습이 참 멋집니다.",
-        "오늘 하루도 수고 많으셨어요, 내일도 응원할게요!",
-        "천천히, 하지만 확실하게 변화하고 있어요.",
-        "어제보다 한 걸음 더 나아간 자신을 칭찬해주세요.",
-        "당신의 진정한 노력은 절대로 배신하지 않습니다."
+        "오늘도 오운완! 아주 멋져요! 💪✨",
+        "차곡차곡 쌓인 오늘이 멋진 결과를 만들어줄 거예요! 🔥",
+        "오늘 흘린 땀방울이 단단한 내일을 만든답니다! 👟🔥",
+        "스스로와의 약속을 지켜낸 당신! 아주 훌륭해요! 👍✨",
+        "꾸준함이야말로 가장 위대한 재능이죠! 최고예요! 👏",
+        "지치지 않고 달려가는 모습이 아주 멋져요! ✨🏋️‍♀️",
+        "오늘도 득근 성공! 아주 대단해요, 푹 쉬세요! 💯",
+        "천천히, 하지만 확실하게 변화하고 있어요! 화이팅! 🌱💪",
+        "어제보다 한 걸음 더 나아간 자신을 칭찬해주세요! 🙌🎉",
+        "당신의 진정한 노력은 절대로 배신하지 않아요! 🔥💪"
     ];
 
     const HOLIDAYS = {
@@ -591,7 +636,10 @@
         if (supabaseLib) {
             supabase = supabaseLib.createClient(SUPABASE_URL, SUPABASE_KEY);
             document.getElementById('btn-login-action').onclick = handleLogin;
+            
             initDropdownOptions();
+            initSignupDateDropdowns();
+            initInbodyDateDropdowns();
 
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
@@ -601,50 +649,72 @@
                 showAuthScreen();
             }
         }
-        document.querySelectorAll('.inbody-date-input, .inbody-date-input-obesity').forEach(el => el.valueAsDate = new Date());
     });
 
-    /* 14번: 비밀번호 보이기/숨기기 토글 */
+    // 1번: 회원가입용 연도/월/일 선택 박스 채우기
+    function initSignupDateDropdowns() {
+        const ySelect = document.getElementById('signup-birth-year');
+        const mSelect = document.getElementById('signup-birth-month');
+        const dSelect = document.getElementById('signup-birth-day');
+        if (!ySelect) return;
+
+        ySelect.innerHTML = '<option value="">연도</option>';
+        mSelect.innerHTML = '<option value="">월</option>';
+        dSelect.innerHTML = '<option value="">일</option>';
+
+        const currentYr = new Date().getFullYear();
+        for (let y = currentYr; y >= 1940; y--) {
+            ySelect.innerHTML += `<option value="${y}">${y}년</option>`;
+        }
+        for (let m = 1; m <= 12; m++) {
+            mSelect.innerHTML += `<option value="${m}">${m}월</option>`;
+        }
+        for (let d = 1; d <= 31; d++) {
+            dSelect.innerHTML += `<option value="${d}">${d}일</option>`;
+        }
+    }
+
+    // 인바디 입력 탭용 연/월/일 드롭다운 초기화
+    function initInbodyDateDropdowns() {
+        const today = new Date();
+        const y = today.getFullYear();
+        const m = today.getMonth() + 1;
+        const d = today.getDate();
+
+        ['mf', 'ob'].forEach(prefix => {
+            const ySel = document.getElementById(`inbody-year-${prefix}`);
+            const mSel = document.getElementById(`inbody-month-${prefix}`);
+            const dSel = document.getElementById(`inbody-day-${prefix}`);
+            
+            if(!ySel) return;
+            ySel.innerHTML = ''; mSel.innerHTML = ''; dSel.innerHTML = '';
+
+            for (let yr = y; yr >= y - 5; yr--) ySel.innerHTML += `<option value="${yr}">${yr}년</option>`;
+            for (let mo = 1; mo <= 12; mo++) mSel.innerHTML += `<option value="${mo}">${mo}월</option>`;
+            for (let dy = 1; dy <= 31; dy++) dSel.innerHTML += `<option value="${dy}">${dy}일</option>`;
+
+            ySel.value = y;
+            mSel.value = m;
+            dSel.value = d;
+        });
+    }
+
+    /* 6번: 비밀번호 숨기기/보이기 토글 */
     function togglePasswordVisibility(inputId, btn) {
         const input = document.getElementById(inputId);
         if (input.type === 'password') {
             input.type = 'text';
-            btn.style.opacity = '0.5';
+            btn.style.opacity = '0.4';
         } else {
             input.type = 'password';
             btn.style.opacity = '1';
         }
     }
 
-    /* 13번: 도메인 선택 변경 처리 */
-    function handleDomainSelectChange(prefix) {
-        const select = document.getElementById(`${prefix}-email-domain-select`);
-        const customInput = document.getElementById(`${prefix}-email-domain-custom`);
-        if (select.value === 'custom') {
-            customInput.style.display = 'block';
-            customInput.focus();
-        } else {
-            customInput.style.display = 'none';
-        }
-    }
-
-    function getFullEmail(prefix) {
-        const id = document.getElementById(`${prefix}-email-id`).value.trim();
-        const select = document.getElementById(`${prefix}-email-domain-select`);
-        const custom = document.getElementById(`${prefix}-email-domain-custom`).value.trim();
-        
-        let domain = select.value;
-        if (domain === 'custom') domain = custom;
-
-        if (!id || !domain) return '';
-        return `${id}@${domain}`;
-    }
-
-    /* 12번: 생년월일 기준 만 나이 수식 계산 함수 */
-    function calculateAge(birthDateString) {
-        if (!birthDateString) return 25;
+    function calculateAge(birthYear, birthMonth, birthDay) {
+        if (!birthYear || !birthMonth || !birthDay) return 25;
         const today = new Date();
-        const birthDate = new Date(birthDateString);
+        const birthDate = new Date(birthYear, birthMonth - 1, birthDay);
         let age = today.getFullYear() - birthDate.getFullYear();
         const m = today.getMonth() - birthDate.getMonth();
         if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
@@ -653,13 +723,10 @@
         return age >= 0 ? age : 0;
     }
 
-    /* 4번: 이름 표기 규칙 (윤효은 -> 효은님, 김헬짱 -> 헬짱님) */
+    /* 14번: 이름 표기 호칭 (헬짱 -> 헬짱님, / 효은 -> 효은님,) */
     function formatDisplayName(fullName) {
-        if (!fullName) return '회원님';
+        if (!fullName) return '회원님,';
         let cleanName = fullName.replace(/님$/g, '').trim();
-        if (cleanName.length >= 3) {
-            cleanName = cleanName.substring(1);
-        }
         return `${cleanName}님,`;
     }
 
@@ -693,12 +760,14 @@
     }
     function closeMyPageModal() { document.getElementById('mypage-modal').classList.remove('active'); }
 
+    // 1번: 회원가입 처리 (드롭다운 연월일 적용)
     async function handleSignUp() {
         const name = document.getElementById('signup-name').value.trim();
-        const birthdate = document.getElementById('signup-birthdate').value;
-        const age = calculateAge(birthdate);
-        
-        const email = getFullEmail('signup');
+        const bYear = document.getElementById('signup-birth-year').value;
+        const bMonth = document.getElementById('signup-birth-month').value;
+        const bDay = document.getElementById('signup-birth-day').value;
+
+        const email = document.getElementById('signup-email-full').value.trim();
         const password = document.getElementById('signup-password').value;
         const passwordConfirm = document.getElementById('signup-password-confirm').value;
         
@@ -707,24 +776,24 @@
         const targetWeight = parseFloat(document.getElementById('signup-target-weight').value) || 50;
 
         if (!name) return alert('이름을 입력해주세요.');
-        if (!birthdate) return alert('생년월일을 선택해주세요.');
+        if (!bYear || !bMonth || !bDay) return alert('생년월일을 완벽하게 선택해주세요.');
         if (!email) return alert('올바른 이메일을 입력해주세요.');
         if (!password) return alert('비밀번호를 입력해주세요.');
-        
-        /* 15번: 비밀번호 두 번 입력 확인 검증 */
-        if (password !== passwordConfirm) {
-            return alert('비밀번호가 일치하지 않습니다. 다시 확인해주세요.');
-        }
+        if (password !== passwordConfirm) return alert('비밀번호가 일치하지 않습니다.');
+
+        const birthdateStr = `${bYear}-${String(bMonth).padStart(2,'0')}-${String(bDay).padStart(2,'0')}`;
+        const age = calculateAge(bYear, bMonth, bDay);
 
         try {
             const { data, error } = await supabase.auth.signUp({
                 email, password,
-                options: { data: { name, birthdate, age, height, target_weight: targetWeight } }
+                options: { data: { name, birthdate: birthdateStr, age, height, target_weight: targetWeight } }
             });
 
             if (error) return alert('회원가입 실패: ' + error.message);
 
             const todayStr = formatDateStr(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate());
+            // 16번: BMI 자동 산출
             const bmi = parseFloat((weight / ((height / 100) ** 2)).toFixed(1));
 
             await supabase.from('workout_logs').insert({
@@ -739,11 +808,12 @@
         } catch (e) { alert('오류 발생: ' + e.message); }
     }
 
+    // 2번: 로그인 시 도메인 없이 수기 전체 입력받기
     async function handleLogin() {
-        const email = getFullEmail('auth');
+        const email = document.getElementById('auth-email-full').value.trim();
         const password = document.getElementById('auth-password').value;
 
-        if (!email || !password) return alert('이메일과 비밀번호를 완벽히 입력해주세요.');
+        if (!email || !password) return alert('이메일과 비밀번호를 입력해주세요.');
 
         try {
             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -771,12 +841,17 @@
         
         if (currentUser.user_metadata) {
             userProfile.name = currentUser.user_metadata.name || '회원';
-            userProfile.age = currentUser.user_metadata.birthdate ? calculateAge(currentUser.user_metadata.birthdate) : (currentUser.user_metadata.age || 25);
+            if (currentUser.user_metadata.birthdate) {
+                const parts = currentUser.user_metadata.birthdate.split('-');
+                userProfile.age = calculateAge(parts[0], parts[1], parts[2]);
+            } else {
+                userProfile.age = currentUser.user_metadata.age || 25;
+            }
             userProfile.height = currentUser.user_metadata.height || 165;
             userProfile.target_weight = currentUser.user_metadata.target_weight || 50;
         }
 
-        /* 4번: 호칭 설정 */
+        /* 14번: 콤마 정돈 및 호칭 노출 */
         document.getElementById('user-name-display').innerText = formatDisplayName(userProfile.name);
 
         setRandomQuote();
@@ -816,12 +891,21 @@
         }
     }
 
+    // 10번: 다른 탭 갔다가 운동 달력 탭으로 돌아오면 이번 달 달력으로 리셋
     function openTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        
         document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
-        if (tabId === 'inbody-tab') { updateChart(); renderGoalCard(); }
+        if (tabId === 'calendar-tab') {
+            document.getElementById('btn-tab-calendar').classList.add('active');
+            currentDate = new Date(); // 이번 달 달력으로 복귀
+            renderCalendar();
+        } else {
+            document.getElementById('btn-tab-inbody').classList.add('active');
+            updateChart(); 
+            renderGoalCard();
+        }
     }
 
     function openSubTab(subTabId) {
@@ -872,6 +956,7 @@
 
         document.getElementById('days-in-month').innerText = `${daysInMonth}일`;
         document.getElementById('workout-days').innerText = `${workoutDaysCount}일`;
+        // 11번: 띄어쓰기 없이 붙여서 표기
         document.getElementById('workout-percent').innerText = `(${Math.round((workoutDaysCount / daysInMonth) * 100)}%)`;
     }
 
@@ -900,6 +985,7 @@
         if (holidayName) headerRow.innerHTML += `<span class="holiday-name">${holidayName}</span>`;
         dayEl.appendChild(headerRow);
 
+        /* 4번: 중앙 정렬 컨테이너 */
         const centerWrapper = document.createElement('div');
         centerWrapper.className = 'day-center-wrapper';
 
@@ -926,12 +1012,10 @@
         renderCalendar();
     }
 
-    /* 5번: 모달 데이터 임시 버퍼 로직 처리 */
     function openWorkoutModal(year, month, day) {
         selectedDateStr = formatDateStr(year, month + 1, day);
         document.getElementById('modal-date-title').innerText = `${month + 1}월 ${day}일 운동 기록`;
         
-        // 원본 데이터 사본 생성
         const origin = workoutData[selectedDateStr] || { tags: [], workouts: [], cardios: [], diary: '' };
         tempModalData = JSON.parse(JSON.stringify(origin));
 
@@ -940,7 +1024,6 @@
         loadDailyLog();
     }
 
-    /* 5번: '저장' 버튼을 누를 때만 DB 저장이 수행됨 */
     async function saveAndCloseWorkoutModal() {
         if (selectedDateStr && tempModalData) {
             tempModalData.diary = document.getElementById('modal-diary-text').value;
@@ -951,7 +1034,6 @@
         renderCalendar();
     }
 
-    /* 5번: X 및 모달 바깥 닫기 시 반영 취소 */
     function cancelWorkoutModal() {
         tempModalData = null;
         document.getElementById('workout-modal').classList.remove('active');
@@ -1028,11 +1110,11 @@
         loadDailyLog();
     }
 
-    /* 전체 목록 및 전체 일기 팝업 */
+    /* 15번: 빠른 날짜가 위로(오름차순), 기본 스크롤은 가장 최근(맨 아래)으로 스크롤 이동 */
     function openFullListModal() {
         const container = document.getElementById('full-list-container');
         container.innerHTML = '';
-        const sortedDates = Object.keys(workoutData).sort().reverse();
+        const sortedDates = Object.keys(workoutData).sort(); // 오름차순 정렬
 
         sortedDates.forEach(date => {
             const data = workoutData[date];
@@ -1045,13 +1127,16 @@
             }
         });
         if (!container.innerHTML) container.innerHTML = '<div style="font-size:0.8rem; color:var(--text-sub); text-align:center; padding:20px;">기록된 운동이 없습니다.</div>';
+        
         document.getElementById('full-list-modal').classList.add('active');
+        setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
     }
 
+    /* 15번: 운동 일기 오름차순 + 맨 아래로 스크롤 */
     function openFullDiaryModal() {
         const container = document.getElementById('full-diary-container');
         container.innerHTML = '';
-        const sortedDates = Object.keys(workoutData).sort().reverse();
+        const sortedDates = Object.keys(workoutData).sort(); // 오름차순 정렬
 
         sortedDates.forEach(date => {
             const diary = workoutData[date]?.diary;
@@ -1060,10 +1145,12 @@
             }
         });
         if (!container.innerHTML) container.innerHTML = '<div style="font-size:0.8rem; color:var(--text-sub); text-align:center; padding:20px;">작성된 운동 일기가 없습니다.</div>';
+        
         document.getElementById('full-diary-modal').classList.add('active');
+        setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
     }
 
-    /* 차트 및 인바디 데이터 관리 (22번: 범례 및 네모 테두리 미세 조정) */
+    /* 7번: 인바디 그래프에서 점뿐만 아니라 날짜 영역을 클릭해도 수정/삭제 가능하도록 개선 */
     function initInBodyChart() {
         const ctx = document.getElementById('inbodyChart').getContext('2d');
         inbodyChart = new Chart(ctx, {
@@ -1072,11 +1159,17 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                onClick: (e, elements) => {
+                onClick: (e, elements, chart) => {
+                    let index = -1;
                     if (elements.length > 0) {
-                        const index = elements[0].index;
-                        const record = inbodyRecords[index];
-                        if (record) openInbodyDetailModal(record);
+                        index = elements[0].index;
+                    } else {
+                        // 점을 못 맞춰도 클릭한 X축 인덱스를 찾아서 해당 날짜 매칭
+                        const points = chart.getElementsAtEventForMode(e, 'index', { intersect: false }, true);
+                        if (points.length > 0) index = points[0].index;
+                    }
+                    if (index !== -1 && inbodyRecords[index]) {
+                        openInbodyDetailModal(inbodyRecords[index]);
                     }
                 },
                 plugins: {
@@ -1084,7 +1177,7 @@
                         labels: { 
                             boxWidth: 8, 
                             boxHeight: 8,
-                            borderWidth: 1, /* 22번: 얇은 범례 네모 테두리 */
+                            borderWidth: 1,
                             font: { size: 9 } 
                         } 
                     }
@@ -1102,13 +1195,22 @@
         let date, weight, muscle, fat, bmi, fatPct;
 
         if (type === 'muscle-fat') {
-            date = document.querySelector('.inbody-date-input').value;
+            const y = document.getElementById('inbody-year-mf').value;
+            const m = document.getElementById('inbody-month-mf').value;
+            const d = document.getElementById('inbody-day-mf').value;
+            date = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
             weight = parseFloat(document.querySelector('.inbody-weight-input').value) || null;
             muscle = parseFloat(document.querySelector('.inbody-muscle-input').value) || null;
             fat = parseFloat(document.querySelector('.inbody-fat-input').value) || null;
+            // 16번: BMI 자동 계산
             if (weight) bmi = parseFloat((weight / ((userProfile.height / 100) ** 2)).toFixed(1));
         } else {
-            date = document.querySelector('.inbody-date-input-obesity').value;
+            const y = document.getElementById('inbody-year-ob').value;
+            const m = document.getElementById('inbody-month-ob').value;
+            const d = document.getElementById('inbody-day-ob').value;
+            date = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
             bmi = parseFloat(document.querySelector('.inbody-bmi-input').value) || null;
             fatPct = parseFloat(document.querySelector('.inbody-fatpct-input').value) || null;
         }
@@ -1194,7 +1296,7 @@
         inbodyChart.update();
     }
 
-    /* 20번: 감량 구조에 맞춘 직관적인 목표 달성 현황 카드 */
+    /* 8번: 게이지 삭제 및 문장 강조형 목표 안내 카드 */
     function renderGoalCard() {
         const latestRecord = inbodyRecords.filter(r => r.weight).pop();
         const currentWeight = latestRecord ? latestRecord.weight : 60;
@@ -1207,24 +1309,12 @@
         const remText = document.getElementById('goal-remaining-text');
         
         if (diff > 0) {
-            remText.innerText = `목표 체중까지 ${diff}kg 남았어요.`;
+            remText.innerHTML = `목표 체중까지 <span style="color:var(--color-bright-blue); font-size:1.35rem;">${diff}kg</span> 남았어요! 💪`;
         } else if (diff == 0) {
-            remText.innerText = `축하합니다! 목표 체중에 도달하셨습니다.`;
+            remText.innerHTML = `🎉 축하합니다! 목표 체중에 도달했어요! 🎉`;
         } else {
-            remText.innerText = `목표 체중보다 ${Math.abs(diff)}kg 더 감량하셨습니다!`;
+            remText.innerHTML = `목표 체중보다 <span style="color:var(--color-bright-blue); font-size:1.35rem;">${Math.abs(diff)}kg</span> 더 감량하셨어요! ✨`;
         }
-
-        // 감량Progress: 초기체중-현재체중 감량 비율 시각화 (목표 도달 시 100%)
-        let progressPercent = 0;
-        if (currentWeight <= targetWeight) {
-            progressPercent = 100;
-        } else {
-            // 현재 감량 잔여 수치를 기반으로 비율 바 계산
-            const maxDiff = Math.max(15, currentWeight - targetWeight + 5); 
-            progressPercent = Math.min(100, Math.max(10, Math.round(((maxDiff - diff) / maxDiff) * 100)));
-        }
-
-        document.getElementById('goal-progress-bar').style.width = `${progressPercent}%`;
     }
 
     async function updateProfileSettings() {
