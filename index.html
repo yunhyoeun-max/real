@@ -16,8 +16,8 @@
     <link rel="apple-touch-icon" href="https://fav.farm/🏋️">
     <link rel="icon" href="https://fav.farm/🏋️">
 
-    <!-- Supabase 및 Chart.js 필수 라이브러리 -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- 호환성이 검증된 안정적인 Supabase 및 Chart.js SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/umd/supabase.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
@@ -49,7 +49,6 @@
 
         .app-container { max-width: 600px; margin: 0 auto; }
         
-        /* 로그인 화면 스타일 */
         .auth-container {
             background: #ffffff;
             padding: 30px 20px;
@@ -171,16 +170,16 @@
         <input type="email" id="auth-email" class="auth-input" placeholder="이메일 주소 입력">
         <input type="password" id="auth-password" class="auth-input" placeholder="비밀번호 입력">
         <div class="auth-btn-group">
-            <button class="auth-btn btn-primary" onclick="handleLogin()">로그인</button>
-            <button class="auth-btn btn-secondary" onclick="handleSignUp()">회원가입</button>
+            <button class="auth-btn btn-primary" id="btn-login-action">로그인</button>
+            <button class="auth-btn btn-secondary" id="btn-signup-action">회원가입</button>
         </div>
     </div>
 
-    <!-- 2. 메인 운동 다이어리 화면 (로그인 후 표시) -->
+    <!-- 2. 메인 운동 다이어리 화면 -->
     <div id="main-screen" style="display: none;">
         <header>
             <h1>운동 기록</h1>
-            <button class="logout-btn" onclick="handleLogout()">로그아웃</button>
+            <button class="logout-btn" id="btn-logout-action">로그아웃</button>
         </header>
 
         <div class="tabs">
@@ -288,7 +287,6 @@
 </div>
 
 <script>
-    // Supabase 프로젝트 클라이언트 연결 정보
     const SUPABASE_URL = 'https://uojffeiyzqtaivwhvjth.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_SSeXBWHXPwcvrnWVDYGxeA_EcTEjEcP';
     
@@ -301,9 +299,18 @@
     let workoutData = {};
     let inbodyRecords = [];
 
-    document.addEventListener('DOMContentLoaded', async () => {
-        if (window.supabase) {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    window.addEventListener('DOMContentLoaded', async () => {
+        // 안전한 객체 접근 체크
+        const supabaseLib = window.supabase || (window.supabaseJS ? window.supabaseJS : null);
+
+        if (supabaseLib && typeof supabaseLib.createClient === 'function') {
+            supabase = supabaseLib.createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            // 버튼 이벤트 바인딩
+            document.getElementById('btn-login-action').onclick = handleLogin;
+            document.getElementById('btn-signup-action').onclick = handleSignUp;
+            document.getElementById('btn-logout-action').onclick = handleLogout;
+
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
                 currentUser = session.user;
@@ -312,23 +319,26 @@
                 showAuthScreen();
             }
         } else {
-            alert('Supabase 라이브러리를 불러오지 못했습니다. 페이지를 새로고침 해보세요.');
+            alert('초기화 실패: 네트워크 문제일 수 있으니 새로고침 후 다시 시도해 주세요.');
         }
 
         document.querySelectorAll('.inbody-date-input, .inbody-date-input-obesity').forEach(el => el.valueAsDate = new Date());
     });
 
-    // 회원가입 및 로그인 처리
     async function handleSignUp() {
         const email = document.getElementById('auth-email').value;
         const password = document.getElementById('auth-password').value;
         if (!email || !password) return alert('이메일과 비밀번호를 모두 입력해 주세요.');
 
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) {
-            alert('회원가입 실패: ' + error.message);
-        } else {
-            alert('회원가입 성공! [로그인] 버튼을 눌러 들어와 주세요.');
+        try {
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            if (error) {
+                alert('회원가입 오류: ' + error.message);
+            } else {
+                alert('회원가입이 완료되었습니다! [로그인] 버튼을 눌러 들어와 주세요.');
+            }
+        } catch (e) {
+            alert('오류 발생: ' + e.message);
         }
     }
 
@@ -337,12 +347,16 @@
         const password = document.getElementById('auth-password').value;
         if (!email || !password) return alert('이메일과 비밀번호를 모두 입력해 주세요.');
 
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-            alert('로그인 실패: ' + error.message);
-        } else {
-            currentUser = data.user;
-            showMainScreen();
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                alert('로그인 오류: ' + error.message);
+            } else {
+                currentUser = data.user;
+                showMainScreen();
+            }
+        } catch (e) {
+            alert('오류 발생: ' + e.message);
         }
     }
 
@@ -365,7 +379,6 @@
         initInBodyChart();
     }
 
-    // 서버 클라우드 데이터 로드
     async function fetchUserData() {
         const { data, error } = await supabase.from('workout_logs').select('*').eq('user_id', currentUser.id);
         if (error) return console.error(error);
@@ -584,7 +597,6 @@
         loadDailyLog();
     }
 
-    // 인바디 차트 함수
     function initInBodyChart() {
         const ctx = document.getElementById('inbodyChart').getContext('2d');
         inbodyChart = new Chart(ctx, {
