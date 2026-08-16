@@ -2,44 +2,34 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <!-- 뷰포트 설정: 사용자 확대 방지 및 Safe Area 대응 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- iOS Safari 전용 앱 모드(전체 화면) 설정 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="운동 기록">
-
-    <!-- Android Chrome 전용 앱 모드 설정 -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#f6f6f8">
-<!-- 홈 화면에 표시될 짧은 이름 -->
     <meta name="apple-mobile-web-app-title" content="운동 다이어리">
 
-    <!-- 홈 화면 아이콘을 예쁜 🏋️ 이모지로 변경 -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#f6f6f8">
+
+    <title>운동 기록 및 인바디 다이어리</title>
+    
     <link rel="apple-touch-icon" href="https://fav.farm/🏋️">
     <link rel="icon" href="https://fav.farm/🏋️">
-    <title>운동 기록 및 인바디 다이어리</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
         :root {
             --bg-color: #f6f6f8; 
             --container-bg: #ffffff;
             --text-main: #1c1c1e;
             --text-sub: #8e8e93;
-            
-            /* 달력 기본 테두리 */
             --border-main: #ebebef; 
-
-            /* 파스텔 팔레트 */
-            --color-pt: #a0a0a5;      /* PT: 연한 회색 톤으로 수정 */
-            --color-lower: #8cb691;   /* 하체: 세이지 그린 */
-            --color-upper: #a2beed;   /* 상체: 덜 쨍하고 차분해진 소프트 스카이 블루 */
-            --color-cardio: #e5a0b0;  /* 유산소: 인디 핑크 */
-            
-            /* 인바디 다홍색 포인트 */
-            --color-dahong: #e06d53;  
-
+            --color-pt: #a0a0a5;
+            --color-lower: #8cb691;
+            --color-upper: #a2beed;
+            --color-cardio: #e5a0b0;
             --radius-lg: 20px;
             --radius-md: 14px;
             --radius-pill: 999px;
@@ -52,423 +42,193 @@
             background-color: var(--bg-color); 
             color: var(--text-main); 
             margin: 0; 
-            /* 상단 노치/카메라 가림을 방지하기 위해 기본 여백 + Safe Area 적용 */
             padding: calc(24px + env(safe-area-inset-top)) 12px env(safe-area-inset-bottom) 12px; 
             -webkit-font-smoothing: antialiased; 
         }
 
         .app-container { max-width: 600px; margin: 0 auto; }
         
-        header { text-align: center; margin-bottom: 18px; padding-top: 6px; }
-        header h1 { font-size: 1.35rem; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
-
-        /* 메인 탭 UI */
-        .tabs { 
-            display: flex; 
-            background: #e9e9ed; 
-            padding: 3px; 
-            border-radius: var(--radius-pill); 
-            margin-bottom: 16px; 
-        }
-        .tab-btn { 
-            flex: 1; 
-            padding: 9px; 
-            text-align: center; 
-            background: none; 
-            border: none; 
-            border-radius: var(--radius-pill); 
-            color: var(--text-sub); 
-            font-weight: 600; 
-            font-size: 0.85rem;
-            cursor: pointer; 
-            transition: all 0.2s ease; 
-        }
-        .tab-btn.active { 
-            background-color: #ffffff; 
-            color: var(--text-main); 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06); 
-        }
-
-        /* 서브 탭 (인바디 전용) */
-        .sub-tabs {
-            display: flex;
-            background: #ebebef;
-            padding: 3px;
-            border-radius: var(--radius-pill);
-            margin-bottom: 14px;
-        }
-        .sub-tab-btn {
-            flex: 1;
-            padding: 7px;
+        /* 로그인 화면 스타일 */
+        .auth-container {
+            background: #ffffff;
+            padding: 30px 20px;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             text-align: center;
-            background: none;
+            margin-top: 40px;
+        }
+        .auth-container h2 { font-size: 1.3rem; margin-bottom: 20px; }
+        .auth-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-main);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            background: #fafafa;
+        }
+        .auth-btn-group { display: flex; gap: 8px; margin-top: 10px; }
+        .auth-btn {
+            flex: 1;
+            padding: 12px;
             border: none;
             border-radius: var(--radius-pill);
-            color: var(--text-sub);
-            font-weight: 600;
-            font-size: 0.78rem;
+            font-weight: 700;
+            font-size: 0.85rem;
             cursor: pointer;
         }
-        .sub-tab-btn.active {
-            background-color: #ffffff;
-            color: var(--text-main);
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        .btn-primary { background: var(--color-upper); color: white; }
+        .btn-secondary { background: #e9e9ed; color: var(--text-main); }
+
+        header { text-align: center; margin-bottom: 18px; padding-top: 6px; position: relative; }
+        header h1 { font-size: 1.35rem; font-weight: 700; color: var(--text-main); margin: 0; }
+        .logout-btn {
+            position: absolute;
+            right: 0;
+            top: 6px;
+            background: none;
+            border: none;
+            color: var(--text-sub);
+            font-size: 0.75rem;
+            cursor: pointer;
         }
+
+        .tabs { display: flex; background: #e9e9ed; padding: 3px; border-radius: var(--radius-pill); margin-bottom: 16px; }
+        .tab-btn { flex: 1; padding: 9px; text-align: center; background: none; border: none; border-radius: var(--radius-pill); color: var(--text-sub); font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+        .tab-btn.active { background-color: #ffffff; color: var(--text-main); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+
+        .sub-tabs { display: flex; background: #ebebef; padding: 3px; border-radius: var(--radius-pill); margin-bottom: 14px; }
+        .sub-tab-btn { flex: 1; padding: 7px; text-align: center; background: none; border: none; border-radius: var(--radius-pill); color: var(--text-sub); font-weight: 600; font-size: 0.78rem; cursor: pointer; }
+        .sub-tab-btn.active { background-color: #ffffff; color: var(--text-main); box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
 
         .tab-content { display: none; background: var(--container-bg); padding: 18px; border-radius: var(--radius-lg); box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
         .tab-content.active { display: block; }
 
-        /* 달력 헤더 */
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding: 0 8px; }
-        .calendar-header button { 
-            background: none; 
-            border: none; 
-            color: #c4c4c8; 
-            font-size: 0.85rem; 
-            cursor: pointer; 
-            padding: 6px 12px;
-            transition: color 0.2s;
-        }
-        .calendar-header button:active { color: #8e8e93; }
-        .calendar-header h2 { margin: 0; font-size: 1.1rem; font-weight: 700; letter-spacing: -0.3px; }
+        .calendar-header button { background: none; border: none; color: #c4c4c8; font-size: 0.85rem; cursor: pointer; padding: 6px 12px; }
+        .calendar-header h2 { margin: 0; font-size: 1.1rem; font-weight: 700; }
 
-        /* 달력 그리드 */
-        .calendar-grid { 
-            display: grid; 
-            grid-template-columns: repeat(7, 1fr); 
-            gap: 1px;
-            background-color: var(--border-main);
-            border: 1px solid var(--border-main);
-            border-radius: 14px;
-            overflow: hidden;
-        }
-        
-        .calendar-day-label { 
-            text-align: center; 
-            padding: 8px 0; 
-            font-size: 0.72rem; 
-            color: var(--text-sub); 
-            font-weight: 600; 
-            background-color: var(--bg-color); 
-        }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: var(--border-main); border: 1px solid var(--border-main); border-radius: 14px; overflow: hidden; }
+        .calendar-day-label { text-align: center; padding: 8px 0; font-size: 0.72rem; color: var(--text-sub); font-weight: 600; background-color: var(--bg-color); }
         .calendar-day-label.sunday { color: #e5564e; }
         .calendar-day-label.saturday { color: #5082c5; }
 
-        .calendar-day { 
-            position: relative; 
-            height: 82px; 
-            padding: 4px; 
-            background: #ffffff; 
-            cursor: pointer; 
-            display: flex;
-            flex-direction: column;
-        }
-
-        .calendar-day.other-month { 
-            background-color: #ffffff; /* 다른 달 날짜 칸도 흰색으로 고정 */
-        }
-        
-        /* 이전/다음달 날짜 색상을 훨씬 더 연하게 변경 */
+        .calendar-day { position: relative; height: 82px; padding: 4px; background: #ffffff; cursor: pointer; display: flex; flex-direction: column; }
         .calendar-day.other-month .day-number { color: #eeeef2 !important; }
-        .calendar-day.other-month.is-sunday .day-number,
-        .calendar-day.other-month.is-holiday .day-number { color: #e5564e !important; opacity: 0.15; }
-        .calendar-day.other-month.is-saturday .day-number { color: #5082c5 !important; opacity: 0.15; }
+        .calendar-day.has-workout { background-color: #f8f9fa; }
 
-        /* 다른 달 날짜의 운동 태그는 연하게(투명하게) 처리 */
-        .calendar-day.other-month .tag-pill {
-            opacity: 0.42;
-        }
-
-        .calendar-day.has-workout {
-            background-color: #f8f9fa;
-        }
-
-        .day-header-row {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-            z-index: 1;
-        }
-
-        .day-number { 
-            font-size: 0.72rem; 
-            color: var(--text-main); 
-            font-weight: 500; 
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 18px;
-            height: 18px;
-        }
-
-        .calendar-day.is-sunday .day-number,
-        .calendar-day.is-holiday .day-number { color: #e5564e; }
+        .day-header-row { position: absolute; top: 4px; left: 4px; display: flex; align-items: center; gap: 2px; z-index: 1; }
+        .day-number { font-size: 0.72rem; color: var(--text-main); font-weight: 500; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; }
+        .calendar-day.is-sunday .day-number, .calendar-day.is-holiday .day-number { color: #e5564e; }
         .calendar-day.is-saturday:not(.is-holiday) .day-number { color: #5082c5; }
 
-        .day-center-wrapper {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 3px;
-            padding-top: 14px;
-        }
-
-        /* 알약(Pill) 태그 */
-        .tag-pill { 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 17px; 
-            padding: 0 6px; 
-            border-radius: var(--radius-pill); 
-            font-size: 0.58rem; 
-            color: #ffffff; 
-            font-weight: 700; 
-            width: 88%; 
-            text-align: center;
-            line-height: 1;
-            transition: opacity 0.2s;
-        }
+        .day-center-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 3px; padding-top: 14px; }
+        .tag-pill { display: flex; align-items: center; justify-content: center; height: 17px; padding: 0 6px; border-radius: var(--radius-pill); font-size: 0.58rem; color: #ffffff; font-weight: 700; width: 88%; text-align: center; }
         .tag-pt { background-color: var(--color-pt); color: #ffffff; }
         .tag-upper { background-color: var(--color-upper); }
         .tag-lower { background-color: var(--color-lower); }
         .tag-cardio { background-color: var(--color-cardio); }
 
-        /* 하단 달성 문구 */
-        .achievement-text-container {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.92rem;
-            font-weight: 400; 
-            color: var(--text-main);
-            letter-spacing: -0.3px;
-        }
-
+        .achievement-text-container { text-align: center; margin-top: 20px; font-size: 0.92rem; color: var(--text-main); }
         .blue-highlight-text { color: #5082c5; font-weight: 700; }
-        .percent-gray-inline { color: var(--text-sub); font-weight: 400; font-size: 0.85rem; margin-right: 2px; }
+        .percent-gray-inline { color: var(--text-sub); font-size: 0.85rem; }
 
-        /* 모달 팝업 UI */
-        .modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.35); 
-            z-index: 1000; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 16px; 
-            backdrop-filter: blur(2px);
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); z-index: 1000; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(2px); }
         .modal.active { display: flex; }
-        .modal-content { 
-            background: #ffffff; 
-            padding: 20px; 
-            border-radius: 22px; 
-            width: 100%; 
-            max-width: 400px; 
-            max-height: 85vh;
-            overflow-y: auto;
-            position: relative; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .close-modal { 
-            position: absolute; 
-            top: 14px; right: 16px; 
-            background: #f2f2f7; 
-            border: none; 
-            width: 28px; height: 28px;
-            border-radius: 50%;
-            font-size: 1.1rem; 
-            color: var(--text-sub); 
-            cursor: pointer; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
+        .modal-content { background: #ffffff; padding: 20px; border-radius: 22px; width: 100%; max-width: 400px; max-height: 85vh; overflow-y: auto; position: relative; }
+        .close-modal { position: absolute; top: 14px; right: 16px; background: #f2f2f7; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 1.1rem; color: var(--text-sub); cursor: pointer; }
         .modal-header h3 { margin: 0 0 16px 0; font-size: 1.05rem; font-weight: 700; }
-        
+
         .tag-selector { display: flex; gap: 6px; margin-bottom: 14px; }
-        .tag-btn { 
-            flex: 1; 
-            height: 38px;
-            border-radius: var(--radius-pill); 
-            border: none; 
-            font-size: 0.82rem; 
-            font-weight: 700; 
-            cursor: pointer; 
-            color: #ffffff; 
-            opacity: 0.35;
-            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .tag-btn.selected { opacity: 1; transform: scale(1.03); box-shadow: 0 3px 8px rgba(0,0,0,0.12); }
-        .btn-pt { background-color: var(--color-pt); color: #ffffff; }
+        .tag-btn { flex: 1; height: 38px; border-radius: var(--radius-pill); border: none; font-size: 0.82rem; font-weight: 700; cursor: pointer; color: #ffffff; opacity: 0.35; }
+        .tag-btn.selected { opacity: 1; transform: scale(1.03); }
+        .btn-pt { background-color: var(--color-pt); }
         .btn-upper { background-color: var(--color-upper); }
         .btn-lower { background-color: var(--color-lower); }
         .btn-cardio { background-color: var(--color-cardio); }
-        
-        .section-title { font-size: 0.82rem; font-weight: 700; margin: 14px 0 6px 0; }
 
         .workout-input-group { display: flex; gap: 6px; margin-bottom: 6px; }
-        .workout-input-group input, .workout-input-group select { 
-            flex: 1; 
-            min-width: 0;
-            padding: 9px; 
-            border: 1px solid rgba(200, 200, 210, 0.5); 
-            border-radius: 10px; 
-            font-size: 0.8rem; 
-            background-color: #fafafa;
-            -webkit-appearance: none;
-        }
-        
-        .add-workout-btn { 
-            width: 100%; 
-            padding: 10px; 
-            background-color: var(--color-upper); 
-            color: #ffffff; 
-            border: none; 
-            border-radius: var(--radius-pill); 
-            font-weight: 700; 
-            font-size: 0.82rem;
-            cursor: pointer; 
-        }
+        .workout-input-group input, .workout-input-group select { flex: 1; min-width: 0; padding: 9px; border: 1px solid rgba(200, 200, 210, 0.5); border-radius: 10px; font-size: 0.8rem; background-color: #fafafa; }
+        .add-workout-btn { width: 100%; padding: 10px; background-color: var(--color-upper); color: #ffffff; border: none; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.82rem; cursor: pointer; }
         .add-workout-btn.cardio { background-color: var(--color-cardio); }
 
-        .daily-log-container {
-            margin-top: 16px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border-main);
-        }
-        .daily-log-title {
-            font-size: 0.82rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+        .daily-log-container { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-main); }
+        .daily-log-list { max-height: 140px; overflow-y: auto; list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+        .daily-log-list li { padding: 8px 12px; background-color: #f7f7f9; border-radius: 10px; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid #efeff3; }
+        .del-log { color: #e5564e; background: none; border: none; cursor: pointer; font-size: 0.75rem; }
 
-        .daily-log-list { 
-            max-height: 140px; 
-            overflow-y: auto; 
-            list-style: none; 
-            padding: 0; 
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .daily-log-list li { 
-            padding: 8px 12px; 
-            background-color: #f7f7f9;
-            border-radius: 10px;
-            font-size: 0.8rem; 
-            display: flex; 
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #efeff3;
-        }
-        .daily-log-list li .log-info {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .daily-log-list li .log-badge {
-            font-size: 0.65rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: #e5e5ea;
-            color: #555;
-            font-weight: 600;
-        }
-        .del-log { color: #e5564e; background: none; border: none; cursor: pointer; font-size: 0.75rem; font-weight: 600; }
-
-        /* 인바디 탭 레이아웃 */
         .inbody-input-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 12px; }
-        .inbody-input-row input { padding: 9px; border: 1px solid rgba(200, 200, 210, 0.5); border-radius: 10px; font-size: 0.8rem; background: #fafafa; -webkit-appearance: none; }
-        .inbody-input-row button { 
-            grid-column: span 2;
-            padding: 10px; 
-            background-color: var(--color-upper);
-            color: #ffffff; 
-            border: none; 
-            border-radius: var(--radius-pill); 
-            font-weight: 700; 
-            font-size: 0.82rem;
-            cursor: pointer; 
-        }
+        .inbody-input-row input { padding: 9px; border: 1px solid rgba(200, 200, 210, 0.5); border-radius: 10px; font-size: 0.8rem; background: #fafafa; }
+        .inbody-input-row button { grid-column: span 2; padding: 10px; background-color: var(--color-upper); color: #ffffff; border: none; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.82rem; cursor: pointer; }
         .chart-container { position: relative; height: 270px; width: 100%; margin-top: 6px; }
-
-        @media (max-width: 480px) {
-            body { padding-left: 6px; padding-right: 6px; }
-            .calendar-day { height: 78px; padding: 3px; }
-            .tag-pill { font-size: 0.55rem; height: 16px; }
-        }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <header>
-        <h1>운동 기록</h1>
-    </header>
-
-    <div class="tabs">
-        <button class="tab-btn active" onclick="openTab('calendar-tab')">🗓️ 운동 달력</button>
-        <button class="tab-btn" onclick="openTab('inbody-tab')">📊 인바디 변화</button>
-    </div>
-
-    <!-- 1. 달력 탭 -->
-    <div id="calendar-tab" class="tab-content active">
-        <div class="calendar-header">
-            <button id="prev-month-btn" onclick="changeMonth(-1)">◀</button>
-            <h2 id="calendar-title">2026년 8월</h2>
-            <button id="next-month-btn" onclick="changeMonth(1)">▶</button>
-        </div>
-        <div class="calendar-grid" id="calendar-grid"></div>
-        
-        <div class="achievement-text-container" id="achievement-text-container">
-            효은님, 이번 달 <span class="blue-highlight-text" id="days-in-month">31일</span> 중 <span class="blue-highlight-text" id="workout-days">5일</span><span class="percent-gray-inline" id="workout-percent">(16%)</span> 운동했어요!
+    <!-- 1. 로그인/회원가입 화면 -->
+    <div id="auth-screen" class="auth-container">
+        <h2>🏋️ 운동 다이어리 로그인</h2>
+        <input type="email" id="auth-email" class="auth-input" placeholder="이메일 주소 입력">
+        <input type="password" id="auth-password" class="auth-input" placeholder="비밀번호 입력">
+        <div class="auth-btn-group">
+            <button class="auth-btn btn-primary" onclick="handleLogin()">로그인</button>
+            <button class="auth-btn btn-secondary" onclick="handleSignUp()">회원가입</button>
         </div>
     </div>
 
-    <!-- 2. 인바디 탭 -->
-    <div id="inbody-tab" class="tab-content">
-        <div class="sub-tabs">
-            <button class="sub-tab-btn active" onclick="openSubTab('muscle-fat-view')">골격근·지방 분석</button>
-            <button class="sub-tab-btn" onclick="openSubTab('obesity-view')">비만 분석</button>
+    <!-- 2. 메인 운동 다이어리 화면 (로그인 후 표시) -->
+    <div id="main-screen" style="display: none;">
+        <header>
+            <h1>운동 기록</h1>
+            <button class="logout-btn" onclick="handleLogout()">로그아웃</button>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('calendar-tab')">🗓️ 운동 달력</button>
+            <button class="tab-btn" onclick="openTab('inbody-tab')">📊 인바디 변화</button>
         </div>
 
-        <div id="muscle-fat-view" class="sub-tab-content">
-            <div class="inbody-input-row">
-                <input type="date" class="inbody-date-input">
-                <input type="number" class="inbody-weight-input" placeholder="체중 (kg)" step="0.1">
-                <input type="number" class="inbody-muscle-input" placeholder="골격근량 (kg)" step="0.1">
-                <input type="number" class="inbody-fat-input" placeholder="체지방량 (kg)" step="0.1">
-                <button onclick="addInBodyRecord('muscle-fat')">골격근·지방 기록 저장</button>
+        <div id="calendar-tab" class="tab-content active">
+            <div class="calendar-header">
+                <button onclick="changeMonth(-1)">◀</button>
+                <h2 id="calendar-title">2026년 8월</h2>
+                <button onclick="changeMonth(1)">▶</button>
+            </div>
+            <div class="calendar-grid" id="calendar-grid"></div>
+            <div class="achievement-text-container" id="achievement-text-container">
+                이번 달 <span class="blue-highlight-text" id="days-in-month">0일</span> 중 <span class="blue-highlight-text" id="workout-days">0일</span><span class="percent-gray-inline" id="workout-percent">(0%)</span> 운동했어요!
             </div>
         </div>
 
-        <div id="obesity-view" class="sub-tab-content" style="display:none;">
-            <div class="inbody-input-row">
-                <input type="date" class="inbody-date-input-obesity">
-                <input type="number" class="inbody-bmi-input" placeholder="BMI" step="0.1">
-                <input type="number" class="inbody-fatpct-input" placeholder="체지방률 (%)" step="0.1">
-                <button onclick="addInBodyRecord('obesity')">비만 분석 기록 저장</button>
+        <div id="inbody-tab" class="tab-content">
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" onclick="openSubTab('muscle-fat-view')">골격근·지방 분석</button>
+                <button class="sub-tab-btn" onclick="openSubTab('obesity-view')">비만 분석</button>
             </div>
-        </div>
 
-        <div class="chart-container">
-            <canvas id="inbodyChart"></canvas>
+            <div id="muscle-fat-view" class="sub-tab-content">
+                <div class="inbody-input-row">
+                    <input type="date" class="inbody-date-input">
+                    <input type="number" class="inbody-weight-input" placeholder="체중 (kg)" step="0.1">
+                    <input type="number" class="inbody-muscle-input" placeholder="골격근량 (kg)" step="0.1">
+                    <input type="number" class="inbody-fat-input" placeholder="체지방량 (kg)" step="0.1">
+                    <button onclick="addInBodyRecord('muscle-fat')">골격근·지방 기록 저장</button>
+                </div>
+            </div>
+
+            <div id="obesity-view" class="sub-tab-content" style="display:none;">
+                <div class="inbody-input-row">
+                    <input type="date" class="inbody-date-input-obesity">
+                    <input type="number" class="inbody-bmi-input" placeholder="BMI" step="0.1">
+                    <input type="number" class="inbody-fatpct-input" placeholder="체지방률 (%)" step="0.1">
+                    <button onclick="addInBodyRecord('obesity')">비만 분석 기록 저장</button>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="inbodyChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
@@ -478,7 +238,7 @@
     <div class="modal-content">
         <button class="close-modal" onclick="closeWorkoutModal()">×</button>
         <div class="modal-header">
-            <h3 id="modal-date-title">8월 14일 운동 기록</h3>
+            <h3 id="modal-date-title">운동 기록</h3>
         </div>
         
         <div class="tag-selector">
@@ -489,7 +249,7 @@
         </div>
 
         <div id="detailed-inputs">
-            <div class="section-title">🏋️ 웨이트 운동 추가</div>
+            <div style="font-size:0.82rem; font-weight:700; margin:14px 0 6px 0;">🏋️ 웨이트 운동 추가</div>
             <div class="workout-input-group">
                 <input type="text" id="workout-name" placeholder="운동 이름" style="flex:2;">
             </div>
@@ -502,7 +262,7 @@
         </div>
 
         <div id="cardio-inputs">
-            <div class="section-title">🏃 유산소 운동 추가</div>
+            <div style="font-size:0.82rem; font-weight:700; margin:14px 0 6px 0;">🏃 유산소 운동 추가</div>
             <div class="workout-input-group">
                 <select id="cardio-type">
                     <option value="스텝밀">스텝밀</option>
@@ -522,125 +282,116 @@
         </div>
 
         <div class="daily-log-container">
-            <div class="daily-log-title">📋 오늘 완료한 운동 목록</div>
+            <div style="font-size:0.82rem; font-weight:700; margin-bottom:8px;">📋 오늘 완료한 운동 목록</div>
             <ul class="daily-log-list" id="daily-log-list"></ul>
         </div>
     </div>
 </div>
 
-<!-- 인바디 수정 모달 -->
-<div class="modal" id="inbody-edit-modal">
-    <div class="modal-content">
-        <button class="close-modal" onclick="closeInbodyEditModal()">×</button>
-        <div class="modal-header">
-            <h3 id="inbody-modal-date-title">인바디 기록 관리</h3>
-        </div>
-        <div id="inbody-edit-fields" class="workout-input-group" style="flex-direction:column; gap:8px;"></div>
-        <div style="display:flex; gap:8px; margin-top:14px;">
-            <button class="add-workout-btn" onclick="saveInbodyEdit()" style="flex:1;">수정 완료</button>
-            <button class="add-workout-btn" onclick="deleteInbodyEdit()" style="flex:1; background-color:#e5564e;">삭제</button>
-        </div>
-    </div>
-</div>
-
 <script>
+    // Supabase 설정 정보 연동
+    const SUPABASE_URL = 'https://uojffeiyzqtaivwhvjth.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_SSeXBWHXPwcvrnWVDYGxeA_EcTEjEcP';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentUser = null;
     let currentDate = new Date();
     let selectedDateStr = null;
     let inbodyChart = null;
     let currentInbodyView = 'muscle-fat';
-    let selectedInbodyIdx = null;
+    let workoutData = {};
+    let inbodyRecords = [];
 
-    /* 💡 음력 명절 맵 (2024년 ~ 2030년 자동 대응) */
-    const lunarHolidaysData = {
-        2024: { seollal: ["2024-02-09", "2024-02-10", "2024-02-11"], buddha: "2024-05-15", chuseok: ["2024-09-16", "2024-09-17", "2024-09-18"] },
-        2025: { seollal: ["2025-01-28", "2025-01-29", "2025-01-30"], buddha: "2025-05-05", chuseok: ["2025-10-05", "2025-10-06", "2025-10-07"] },
-        2026: { seollal: ["2026-02-16", "2026-02-17", "2026-02-18"], buddha: "2026-05-24", chuseok: ["2026-09-24", "2026-09-25", "2026-09-26"] },
-        2027: { seollal: ["2027-02-06", "2027-02-07", "2027-02-08"], buddha: "2027-05-13", chuseok: ["2027-09-14", "2027-09-15", "2027-09-16"] },
-        2028: { seollal: ["2028-01-26", "2028-01-27", "2028-01-28"], buddha: "2028-05-02", chuseok: ["2028-10-02", "2028-10-03", "2028-10-04"] },
-        2029: { seollal: ["2029-02-12", "2029-02-13", "2029-02-14"], buddha: "2029-05-20", chuseok: ["2029-09-21", "2029-09-22", "2029-09-23"] },
-        2030: { seollal: ["2030-02-02", "2030-02-03", "2030-02-04"], buddha: "2030-05-09", chuseok: ["2030-09-11", "2030-09-12", "2030-09-13"] }
-    };
-
-    /* 💡 매년 자동 계산되는 대한민국 공휴일 알고리즘 (대체공휴일 포함) */
-    function getHolidaysSetForYear(year) {
-        const set = new Set();
-        
-        // 1. 양력 고정 공휴일
-        const fixedSolar = ["01-01", "03-01", "05-05", "06-06", "08-15", "10-03", "10-09", "12-25"];
-        fixedSolar.forEach(md => set.add(`${year}-${md}`));
-
-        // 2. 음력 명절 추가
-        const lunarData = lunarHolidaysData[year];
-        if (lunarData) {
-            lunarData.seollal.forEach(d => set.add(d));
-            set.add(lunarData.buddha);
-            lunarData.chuseok.forEach(d => set.add(d));
+    document.addEventListener('DOMContentLoaded', async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            currentUser = session.user;
+            showMainScreen();
+        } else {
+            showAuthScreen();
         }
 
-        // 3. 대체공휴일 자동 계산
-        const altTargets = [
-            `${year}-03-01`, `${year}-05-05`, `${year}-08-15`, `${year}-10-03`, `${year}-10-09`
-        ];
-        if (lunarData) {
-            altTargets.push(lunarData.buddha);
-            lunarData.seollal.forEach(d => altTargets.push(d));
-            lunarData.chuseok.forEach(d => altTargets.push(d));
-        }
-
-        altTargets.forEach(dateStr => {
-            const dt = new Date(dateStr);
-            const dayOfWeek = dt.getDay(); // 0: 일, 6: 토
-            
-            if (dayOfWeek === 0 || dayOfWeek === 6) {
-                let altDate = new Date(dt);
-                while (true) {
-                    altDate.setDate(altDate.getDate() + 1);
-                    const altStr = formatDateObj(altDate);
-                    const altDay = altDate.getDay();
-                    
-                    if (altDay !== 0 && altDay !== 6 && !set.has(altStr)) {
-                        set.add(altStr);
-                        break;
-                    }
-                }
-            }
-        });
-
-        return set;
-    }
-
-    function formatDateObj(dt) {
-        const y = dt.getFullYear();
-        const m = String(dt.getMonth() + 1).padStart(2, '0');
-        const d = String(dt.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
-    }
-
-    let workoutData = JSON.parse(localStorage.getItem('ios_workoutData_v11')) || {
-        "2026-07-31": { tags: ["PT", "하체"], workouts: [{ name: "레그프레스", weight: "100", reps: "12", sets: "4" }], cardios: [] },
-        "2026-08-03": { tags: ["PT"], workouts: [{ name: "벤치프레스", weight: "60", reps: "10", sets: "4" }], cardios: [] },
-        "2026-08-05": { tags: ["PT", "하체", "유산소"], workouts: [{ name: "스쿼트", weight: "80", reps: "8", sets: "5" }], cardios: [{ type: "러닝머신", time: "30분" }] },
-        "2026-08-08": { tags: ["상체", "유산소"], workouts: [{ name: "숄더프레스", weight: "20", reps: "12", sets: "4" }], cardios: [{ type: "스텝밀", time: "20분" }] },
-        "2026-08-12": { tags: ["PT"], workouts: [{ name: "데드리프트", weight: "90", reps: "8", sets: "4" }], cardios: [] },
-        "2026-08-14": { tags: ["유산소"], workouts: [], cardios: [{ type: "실내자전거", time: "40분" }] }
-    };
-    
-    let inbodyRecords = JSON.parse(localStorage.getItem('ios_inbodyRecords_v11')) || [
-        { date: "2026-07-01", weight: 72.5, muscle: 31.0, fat: 16.2, bmi: 24.1, fatPct: 22.3 },
-        { date: "2026-07-15", weight: 71.8, muscle: 31.4, fat: 15.5, bmi: 23.8, fatPct: 21.5 },
-        { date: "2026-08-01", weight: 71.2, muscle: 31.8, fat: 14.8, bmi: 23.6, fatPct: 20.7 },
-        { date: "2026-08-14", weight: 70.6, muscle: 32.2, fat: 14.1, bmi: 23.4, fatPct: 19.9 }
-    ];
-
-    document.addEventListener('DOMContentLoaded', () => {
-        renderCalendar();
-        initInBodyChart();
         document.querySelectorAll('.inbody-date-input, .inbody-date-input-obesity').forEach(el => el.valueAsDate = new Date());
     });
 
-    function saveData() {
-        localStorage.setItem('ios_workoutData_v11', JSON.stringify(workoutData));
-        localStorage.setItem('ios_inbodyRecords_v11', JSON.stringify(inbodyRecords));
+    // 인증 관련 함수
+    async function handleSignUp() {
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        if (!email || !password) return alert('이메일과 비밀번호를 입력해 주세요.');
+
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) alert('회원가입 실패: ' + error.message);
+        else alert('회원가입 성공! 바로 로그인해 주세요.');
+    }
+
+    async function handleLogin() {
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        if (!email || !password) return alert('이메일과 비밀번호를 입력해 주세요.');
+
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) alert('로그인 실패: ' + error.message);
+        else {
+            currentUser = data.user;
+            showMainScreen();
+        }
+    }
+
+    async function handleLogout() {
+        await supabase.auth.signOut();
+        currentUser = null;
+        showAuthScreen();
+    }
+
+    function showAuthScreen() {
+        document.getElementById('auth-screen').style.display = 'block';
+        document.getElementById('main-screen').style.display = 'none';
+    }
+
+    async function showMainScreen() {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        await fetchUserData();
+        renderCalendar();
+        initInBodyChart();
+    }
+
+    // 서버 데이터 불러오기
+    async function fetchUserData() {
+        const { data, error } = await supabase.from('workout_logs').select('*').eq('user_id', currentUser.id);
+        if (error) return console.error(error);
+
+        workoutData = {};
+        inbodyRecords = [];
+
+        data.forEach(row => {
+            if (row.workout_data) workoutData[row.date] = row.workout_data;
+            if (row.weight || row.skeletal_muscle || row.body_fat_mass || row.bmi || row.body_fat_percent) {
+                inbodyRecords.push({
+                    id: row.id,
+                    date: row.date,
+                    weight: row.weight,
+                    muscle: row.skeletal_muscle,
+                    fat: row.body_fat_mass,
+                    bmi: row.bmi,
+                    fatPct: row.body_fat_percent
+                });
+            }
+        });
+    }
+
+    async function saveWorkoutToDB(dateStr) {
+        const data = workoutData[dateStr] || { tags: [], workouts: [], cardios: [] };
+        
+        // 기존 날짜 기록 확인 후 업데이트 또는 저장
+        const { data: existing } = await supabase.from('workout_logs').select('id').eq('user_id', currentUser.id).eq('date', dateStr);
+        
+        if (existing && existing.length > 0) {
+            await supabase.from('workout_logs').update({ workout_data: data }).eq('id', existing[0].id);
+        } else {
+            await supabase.from('workout_logs').insert({ user_id: currentUser.id, date: dateStr, workout_data: data });
+        }
     }
 
     function openTab(tabId) {
@@ -654,10 +405,8 @@
     function openSubTab(subTabId) {
         document.querySelectorAll('.sub-tab-content').forEach(s => s.style.display = 'none');
         document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
-        
         document.getElementById(subTabId).style.display = 'block';
         event.currentTarget.classList.add('active');
-
         currentInbodyView = (subTabId === 'muscle-fat-view') ? 'muscle-fat' : 'obesity';
         updateChart();
     }
@@ -671,15 +420,10 @@
         const month = currentDate.getMonth(); 
         title.innerText = `${year}년 ${month + 1}월`;
 
-        const holidaySet = getHolidaysSetForYear(year);
-
         const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
         daysOfWeek.forEach((day, index) => {
             const label = document.createElement('div');
-            let className = 'calendar-day-label';
-            if (index === 0) className += ' sunday';
-            if (index === 6) className += ' saturday';
-            label.className = className;
+            label.className = `calendar-day-label ${index === 0 ? 'sunday' : index === 6 ? 'saturday' : ''}`;
             label.innerText = day;
             grid.appendChild(label);
         });
@@ -688,106 +432,52 @@
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const prevDaysInMonth = new Date(year, month, 0).getDate();
 
-        // 1. 지난 달 (이전 달 날짜라도 운동 기록 태그 표시 & 투명도 적용)
-        for (let i = firstDay - 1; i >= 0; i--) {
-            const dayNum = prevDaysInMonth - i;
-            const dayEl = createDayCell(year, month - 1, dayNum, true, holidaySet);
-            grid.appendChild(dayEl);
-        }
-
-        // 2. 이번 달
+        for (let i = firstDay - 1; i >= 0; i--) grid.appendChild(createDayCell(year, month - 1, prevDaysInMonth - i, true));
+        
         let workoutDaysCount = 0;
         for (let i = 1; i <= daysInMonth; i++) {
-            const dayEl = createDayCell(year, month, i, false, holidaySet);
+            const dayEl = createDayCell(year, month, i, false);
             const dateStr = formatDateStr(year, month + 1, i);
-            
-            if (workoutData[dateStr]) {
-                const data = workoutData[dateStr];
-                const hasWorkout = (data.tags && data.tags.length > 0) || (data.workouts && data.workouts.length > 0) || (data.cardios && data.cardios.length > 0);
-                if (hasWorkout) workoutDaysCount++;
+            if (workoutData[dateStr] && (workoutData[dateStr].tags?.length || workoutData[dateStr].workouts?.length || workoutData[dateStr].cardios?.length)) {
+                workoutDaysCount++;
             }
-
             grid.appendChild(dayEl);
         }
 
-        // 3. 다음 달 (다음 달 날짜라도 운동 기록 태그 표시 & 투명도 적용)
-        const totalCells = grid.children.length - 7;
-        const remainingCells = (7 - (totalCells % 7)) % 7;
-        for (let i = 1; i <= remainingCells; i++) {
-            const dayEl = createDayCell(year, month + 1, i, true, holidaySet);
-            grid.appendChild(dayEl);
-        }
+        const remainingCells = (7 - (grid.children.length - 7) % 7) % 7;
+        for (let i = 1; i <= remainingCells; i++) grid.appendChild(createDayCell(year, month + 1, i, true));
 
-        const pct = Math.round((workoutDaysCount / daysInMonth) * 100);
         document.getElementById('days-in-month').innerText = `${daysInMonth}일`;
         document.getElementById('workout-days').innerText = `${workoutDaysCount}일`;
-        document.getElementById('workout-percent').innerText = `(${pct}%)`;
+        document.getElementById('workout-percent').innerText = `(${Math.round((workoutDaysCount / daysInMonth) * 100)}%)`;
     }
 
-    function createDayCell(year, monthIndex, dayNum, isOtherMonth, holidaySet) {
+    function createDayCell(year, monthIndex, dayNum, isOtherMonth) {
         const cellDate = new Date(year, monthIndex, dayNum);
-        const cellYear = cellDate.getFullYear();
-        const cellMonth = cellDate.getMonth() + 1;
-        const cellDay = cellDate.getDate();
-        const dayOfWeek = cellDate.getDay();
-        const dateStr = formatDateStr(cellYear, cellMonth, cellDay);
+        const dateStr = formatDateStr(cellDate.getFullYear(), cellDate.getMonth() + 1, cellDate.getDate());
 
         const dayEl = document.createElement('div');
-        dayEl.className = 'calendar-day';
-        if (isOtherMonth) dayEl.classList.add('other-month');
-
-        const isHoli = holidaySet.has(dateStr);
-
-        if (dayOfWeek === 0) dayEl.classList.add('is-sunday');
-        if (dayOfWeek === 6) dayEl.classList.add('is-saturday');
-        if (isHoli) dayEl.classList.add('is-holiday');
+        dayEl.className = `calendar-day ${isOtherMonth ? 'other-month' : ''}`;
 
         const headerRow = document.createElement('div');
         headerRow.className = 'day-header-row';
-
-        const dayNumSpan = document.createElement('span');
-        dayNumSpan.className = 'day-number';
-        dayNumSpan.innerText = cellDay;
-        headerRow.appendChild(dayNumSpan);
-
+        headerRow.innerHTML = `<span class="day-number">${cellDate.getDate()}</span>`;
         dayEl.appendChild(headerRow);
 
         const centerWrapper = document.createElement('div');
         centerWrapper.className = 'day-center-wrapper';
 
-        // 운동 기록 태그 rendering (현재 달/다른 달 모두 적용)
-        if (workoutData[dateStr]) {
-            const data = workoutData[dateStr];
-            const hasTags = data.tags && data.tags.length > 0;
-            const hasWorkout = hasTags || (data.workouts && data.workouts.length > 0) || (data.cardios && data.cardios.length > 0);
-
-            if (hasWorkout) {
-                dayEl.classList.add('has-workout');
-            }
-
-            if (hasTags) {
-                const tagOrder = ["PT", "상체", "하체", "유산소"];
-                const sortedTags = [...data.tags].sort((a, b) => tagOrder.indexOf(a) - tagOrder.indexOf(b));
-
-                sortedTags.forEach(tag => {
-                    const tagSpan = document.createElement('span');
-                    let tagClass = 'tag-pt';
-                    if (tag === '상체') tagClass = 'tag-upper';
-                    else if (tag === '하체') tagClass = 'tag-lower';
-                    else if (tag === '유산소') tagClass = 'tag-cardio';
-                    
-                    tagSpan.className = `tag-pill ${tagClass}`;
-                    tagSpan.innerText = tag;
-                    centerWrapper.appendChild(tagSpan);
-                });
-            }
+        if (workoutData[dateStr]?.tags) {
+            workoutData[dateStr].tags.forEach(tag => {
+                const tagSpan = document.createElement('span');
+                tagSpan.className = `tag-pill ${tag === '상체' ? 'tag-upper' : tag === '하체' ? 'tag-lower' : tag === '유산소' ? 'tag-cardio' : 'tag-pt'}`;
+                tagSpan.innerText = tag;
+                centerWrapper.appendChild(tagSpan);
+            });
         }
 
         dayEl.appendChild(centerWrapper);
-
-        // 클릭 시 해당 날짜의 운동 모달 열기 (다른 달 날짜도 바로 수정 및 확인 가능)
-        dayEl.onclick = () => openWorkoutModal(cellYear, cellMonth - 1, cellDay);
-
+        dayEl.onclick = () => openWorkoutModal(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
         return dayEl;
     }
 
@@ -804,7 +494,6 @@
         selectedDateStr = formatDateStr(year, month + 1, day);
         document.getElementById('modal-date-title').innerText = `${month + 1}월 ${day}일 운동 기록`;
         document.getElementById('workout-modal').classList.add('active');
-        clearInputs();
         loadDailyLog();
     }
 
@@ -813,339 +502,137 @@
         renderCalendar();
     }
 
-    function toggleTag(tag) {
-        if (!workoutData[selectedDateStr]) {
-            workoutData[selectedDateStr] = { tags: [], workouts: [], cardios: [] };
-        }
-        if (!workoutData[selectedDateStr].tags) {
-            workoutData[selectedDateStr].tags = [];
-        }
-
+    async function toggleTag(tag) {
+        if (!workoutData[selectedDateStr]) workoutData[selectedDateStr] = { tags: [], workouts: [], cardios: [] };
         const tags = workoutData[selectedDateStr].tags;
-        const index = tags.indexOf(tag);
+        const idx = tags.indexOf(tag);
+        if (idx > -1) tags.splice(idx, 1);
+        else tags.push(tag);
 
-        if (index > -1) {
-            tags.splice(index, 1);
-        } else {
-            tags.push(tag);
-        }
-
-        saveData();
+        await saveWorkoutToDB(selectedDateStr);
         updateTagButtons();
     }
 
     function updateTagButtons() {
         document.querySelectorAll('.tag-btn').forEach(btn => btn.classList.remove('selected'));
-        if (workoutData[selectedDateStr] && workoutData[selectedDateStr].tags) {
-            const tags = workoutData[selectedDateStr].tags;
-            if (tags.includes('PT')) document.getElementById('btn-pt').classList.add('selected');
-            if (tags.includes('상체')) document.getElementById('btn-upper').classList.add('selected');
-            if (tags.includes('하체')) document.getElementById('btn-lower').classList.add('selected');
-            if (tags.includes('유산소')) document.getElementById('btn-cardio').classList.add('selected');
+        if (workoutData[selectedDateStr]?.tags) {
+            workoutData[selectedDateStr].tags.forEach(tag => {
+                if (tag === 'PT') document.getElementById('btn-pt').classList.add('selected');
+                if (tag === '상체') document.getElementById('btn-upper').classList.add('selected');
+                if (tag === '하체') document.getElementById('btn-lower').classList.add('selected');
+                if (tag === '유산소') document.getElementById('btn-cardio').classList.add('selected');
+            });
         }
     }
 
-    function addDetailedWorkout() {
+    async function addDetailedWorkout() {
         const name = document.getElementById('workout-name').value.trim();
-        const weight = document.getElementById('workout-weight').value.trim();
-        const reps = document.getElementById('workout-reps').value.trim();
-        const sets = document.getElementById('workout-sets').value.trim();
-
-        if (!name) { alert('운동 이름을 입력해 주세요.'); return; }
-
+        if (!name) return alert('운동 이름을 입력하세요.');
         if (!workoutData[selectedDateStr]) workoutData[selectedDateStr] = { tags: [], workouts: [], cardios: [] };
-        if (!workoutData[selectedDateStr].workouts) workoutData[selectedDateStr].workouts = [];
-        
-        workoutData[selectedDateStr].workouts.push({ name, weight, reps, sets });
-        saveData();
+
+        workoutData[selectedDateStr].workouts.push({
+            name,
+            weight: document.getElementById('workout-weight').value,
+            reps: document.getElementById('workout-reps').value,
+            sets: document.getElementById('workout-sets').value
+        });
+
+        await saveWorkoutToDB(selectedDateStr);
         loadDailyLog();
-        clearInputs();
-    }
-
-    function addCardioWorkout() {
-        const type = document.getElementById('cardio-type').value;
-        const time = document.getElementById('cardio-time').value;
-
-        if (!workoutData[selectedDateStr]) workoutData[selectedDateStr] = { tags: [], workouts: [], cardios: [] };
-        if (!workoutData[selectedDateStr].cardios) workoutData[selectedDateStr].cardios = [];
-
-        if (!workoutData[selectedDateStr].tags.includes('유산소')) {
-            workoutData[selectedDateStr].tags.push('유산소');
-        }
-
-        workoutData[selectedDateStr].cardios.push({ type, time });
-        saveData();
-        updateTagButtons();
-        loadDailyLog();
-    }
-
-    function clearInputs() {
         document.getElementById('workout-name').value = '';
-        document.getElementById('workout-weight').value = '';
-        document.getElementById('workout-reps').value = '';
-        document.getElementById('workout-sets').value = '';
+    }
+
+    async function addCardioWorkout() {
+        if (!workoutData[selectedDateStr]) workoutData[selectedDateStr] = { tags: [], workouts: [], cardios: [] };
+        if (!workoutData[selectedDateStr].tags.includes('유산소')) workoutData[selectedDateStr].tags.push('유산소');
+
+        workoutData[selectedDateStr].cardios.push({
+            type: document.getElementById('cardio-type').value,
+            time: document.getElementById('cardio-time').value
+        });
+
+        await saveWorkoutToDB(selectedDateStr);
+        loadDailyLog();
     }
 
     function loadDailyLog() {
         const list = document.getElementById('daily-log-list');
         list.innerHTML = '';
-        
         updateTagButtons();
 
-        if (workoutData[selectedDateStr]) {
-            const data = workoutData[selectedDateStr];
-            let hasAnyLog = false;
-
-            if (data.workouts && data.workouts.length > 0) {
-                hasAnyLog = true;
-                data.workouts.forEach((w, index) => {
-                    const li = document.createElement('li');
-                    let details = [];
-                    if (w.weight) details.push(`${w.weight}kg`);
-                    if (w.reps) details.push(`${w.reps}회`);
-                    if (w.sets) details.push(`${w.sets}세트`);
-                    const detailText = details.length > 0 ? ` · ${details.join(' ')}` : '';
-
-                    li.innerHTML = `
-                        <div class="log-info">
-                            <span class="log-badge">웨이트</span>
-                            <span><strong>${w.name}</strong><span style="color:#666;">${detailText}</span></span>
-                        </div>
-                        <button class="del-log" onclick="deleteLog('workout', ${index})">삭제</button>
-                    `;
-                    list.appendChild(li);
-                });
-            }
-
-            if (data.cardios && data.cardios.length > 0) {
-                hasAnyLog = true;
-                data.cardios.forEach((c, index) => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <div class="log-info">
-                            <span class="log-badge" style="background:#fce8ec; color:#b85c72;">유산소</span>
-                            <span><strong>${c.type}</strong> <span style="color:#666;">· ${c.time}</span></span>
-                        </div>
-                        <button class="del-log" onclick="deleteLog('cardio', ${index})">삭제</button>
-                    `;
-                    list.appendChild(li);
-                });
-            }
-
-            if (!hasAnyLog) {
-                list.innerHTML = `<li style="justify-content:center; color:#999; background:none; border:none;">등록된 운동 내역이 없습니다.</li>`;
-            }
-        } else {
-            list.innerHTML = `<li style="justify-content:center; color:#999; background:none; border:none;">등록된 운동 내역이 없습니다.</li>`;
+        const data = workoutData[selectedDateStr];
+        if (data) {
+            data.workouts?.forEach((w, i) => {
+                list.innerHTML += `<li><span><strong>${w.name}</strong> · ${w.weight}kg ${w.reps}회 ${w.sets}세트</span><button class="del-log" onclick="deleteLog('workout', ${i})">삭제</button></li>`;
+            });
+            data.cardios?.forEach((c, i) => {
+                list.innerHTML += `<li><span><strong>${c.type}</strong> · ${c.time}</span><button class="del-log" onclick="deleteLog('cardio', ${i})">삭제</button></li>`;
+            });
         }
     }
 
-    function deleteLog(type, index) {
-        if (type === 'workout') {
-            workoutData[selectedDateStr].workouts.splice(index, 1);
-        } else if (type === 'cardio') {
-            workoutData[selectedDateStr].cardios.splice(index, 1);
-        }
-        saveData();
+    async function deleteLog(type, index) {
+        if (type === 'workout') workoutData[selectedDateStr].workouts.splice(index, 1);
+        else workoutData[selectedDateStr].cardios.splice(index, 1);
+        await saveWorkoutToDB(selectedDateStr);
         loadDailyLog();
     }
 
-    /* 📊 인바디 차트 로직 */
+    // 인바디 관련 로직
     function initInBodyChart() {
         const ctx = document.getElementById('inbodyChart').getContext('2d');
         inbodyChart = new Chart(ctx, {
             type: 'line',
             data: { labels: [], datasets: [] },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                onClick: (e, activeElements) => {
-                    if (activeElements.length > 0) {
-                        openInbodyEditModal(activeElements[0].index);
-                    }
-                },
-                plugins: {
-                    legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11, weight: '500' } } }
-                },
-                scales: {
-                    x: { grid: { display: false }, ticks: { font: { size: 10 } } },
-                    y: { beginAtZero: false, grid: { color: 'rgba(220,220,225,0.4)' }, ticks: { font: { size: 10 } } }
-                }
-            }
+            options: { responsive: true, maintainAspectRatio: false }
         });
         updateChart();
     }
 
-    function formatKoreanDate(dateStr) {
-        if (!dateStr) return '';
-        const parts = dateStr.split('-');
-        return `${parseInt(parts[1], 10)}월 ${parseInt(parts[2], 10)}일`;
-    }
-
-    function addInBodyRecord(type) {
+    async function addInBodyRecord(type) {
         if (type === 'muscle-fat') {
             const date = document.querySelector('.inbody-date-input').value;
-            const weightVal = document.querySelector('.inbody-weight-input').value.trim();
-            const muscleVal = document.querySelector('.inbody-muscle-input').value.trim();
-            const fatVal = document.querySelector('.inbody-fat-input').value.trim();
+            const weight = parseFloat(document.querySelector('.inbody-weight-input').value) || null;
+            const muscle = parseFloat(document.querySelector('.inbody-muscle-input').value) || null;
+            const fat = parseFloat(document.querySelector('.inbody-fat-input').value) || null;
 
-            const weight = weightVal !== '' ? parseFloat(weightVal) : null;
-            const muscle = muscleVal !== '' ? parseFloat(muscleVal) : null;
-            const fat = fatVal !== '' ? parseFloat(fatVal) : null;
-
-            if (!date || (weight === null && muscle === null && fat === null)) { 
-                alert('날짜와 최소 하나 이상의 수치(예: 체중)를 입력해 주세요.'); 
-                return; 
-            }
-
-            let rec = inbodyRecords.find(r => r.date === date);
-            if (rec) { 
-                if (weight !== null) rec.weight = weight;
-                if (muscle !== null) rec.muscle = muscle;
-                if (fat !== null) rec.fat = fat;
-            } else { 
-                inbodyRecords.push({ date, weight, muscle, fat }); 
-            }
-            
-            document.querySelector('.inbody-weight-input').value = '';
-            document.querySelector('.inbody-muscle-input').value = '';
-            document.querySelector('.inbody-fat-input').value = '';
+            await supabase.from('workout_logs').insert({
+                user_id: currentUser.id,
+                date, weight, skeletal_muscle: muscle, body_fat_mass: fat
+            });
         } else {
             const date = document.querySelector('.inbody-date-input-obesity').value;
-            const bmi = parseFloat(document.querySelector('.inbody-bmi-input').value);
-            const fatPct = parseFloat(document.querySelector('.inbody-fatpct-input').value);
+            const bmi = parseFloat(document.querySelector('.inbody-bmi-input').value) || null;
+            const fatPct = parseFloat(document.querySelector('.inbody-fatpct-input').value) || null;
 
-            if (!date || isNaN(bmi) || isNaN(fatPct)) { alert('BMI와 체지방률을 입력해 주세요.'); return; }
-
-            let rec = inbodyRecords.find(r => r.date === date);
-            if (rec) { rec.bmi = bmi; rec.fatPct = fatPct; }
-            else { inbodyRecords.push({ date, bmi, fatPct }); }
-
-            document.querySelector('.inbody-bmi-input').value = '';
-            document.querySelector('.inbody-fatpct-input').value = '';
+            await supabase.from('workout_logs').insert({
+                user_id: currentUser.id,
+                date, bmi, body_fat_percent: fatPct
+            });
         }
 
-        inbodyRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
-        saveData();
+        await fetchUserData();
         updateChart();
     }
 
     function updateChart() {
         if (!inbodyChart) return;
-        
-        inbodyChart.data.labels = inbodyRecords.map(r => formatKoreanDate(r.date));
+        inbodyRecords.sort((a,b) => new Date(a.date) - new Date(b.date));
+        inbodyChart.data.labels = inbodyRecords.map(r => r.date);
 
         if (currentInbodyView === 'muscle-fat') {
             inbodyChart.data.datasets = [
-                { 
-                    label: '체중 (kg)', 
-                    data: inbodyRecords.map(r => r.weight !== undefined ? r.weight : null), 
-                    borderColor: '#e06d53', 
-                    borderWidth: 2.2, 
-                    tension: 0.2, 
-                    pointBackgroundColor: '#fff', 
-                    pointRadius: 4,
-                    spanGaps: true 
-                },
-                { 
-                    label: '골격근량 (kg)', 
-                    data: inbodyRecords.map(r => r.muscle !== undefined ? r.muscle : null), 
-                    borderColor: '#8cb691', 
-                    borderWidth: 2.2, 
-                    tension: 0.2, 
-                    pointBackgroundColor: '#fff', 
-                    pointRadius: 4,
-                    spanGaps: true 
-                },
-                { 
-                    label: '체지방량 (kg)', 
-                    data: inbodyRecords.map(r => r.fat !== undefined ? r.fat : null), 
-                    borderColor: '#8eabf4', 
-                    borderWidth: 2.2, 
-                    tension: 0.2, 
-                    pointBackgroundColor: '#fff', 
-                    pointRadius: 4,
-                    spanGaps: true 
-                }
+                { label: '체중 (kg)', data: inbodyRecords.map(r => r.weight), borderColor: '#e06d53', spanGaps: true },
+                { label: '골격근량 (kg)', data: inbodyRecords.map(r => r.muscle), borderColor: '#8cb691', spanGaps: true },
+                { label: '체지방량 (kg)', data: inbodyRecords.map(r => r.fat), borderColor: '#8eabf4', spanGaps: true }
             ];
         } else {
             inbodyChart.data.datasets = [
-                { 
-                    label: 'BMI', 
-                    data: inbodyRecords.map(r => r.bmi !== undefined ? r.bmi : null), 
-                    borderColor: '#8eabf4', 
-                    borderWidth: 2.2, 
-                    tension: 0.2, 
-                    pointBackgroundColor: '#fff', 
-                    pointRadius: 4,
-                    spanGaps: true 
-                },
-                { 
-                    label: '체지방률 (%)', 
-                    data: inbodyRecords.map(r => r.fatPct !== undefined ? r.fatPct : null), 
-                    borderColor: '#e06d53', 
-                    borderWidth: 2.2, 
-                    tension: 0.2, 
-                    pointBackgroundColor: '#fff', 
-                    pointRadius: 4,
-                    spanGaps: true 
-                }
+                { label: 'BMI', data: inbodyRecords.map(r => r.bmi), borderColor: '#8eabf4', spanGaps: true },
+                { label: '체지방률 (%)', data: inbodyRecords.map(r => r.fatPct), borderColor: '#e06d53', spanGaps: true }
             ];
         }
-        
         inbodyChart.update();
-    }
-
-    function openInbodyEditModal(index) {
-        selectedInbodyIdx = index;
-        const record = inbodyRecords[index];
-        document.getElementById('inbody-modal-date-title').innerText = `${formatKoreanDate(record.date)} 인바디 수정`;
-        
-        const fields = document.getElementById('inbody-edit-fields');
-        fields.innerHTML = `
-            <label style="font-size:0.78rem; font-weight:600;">체중 (kg) <input type="number" id="edit-weight" value="${record.weight !== null && record.weight !== undefined ? record.weight : ''}" step="0.1"></label>
-            <label style="font-size:0.78rem; font-weight:600;">골격근량 (kg) <input type="number" id="edit-muscle" value="${record.muscle !== null && record.muscle !== undefined ? record.muscle : ''}" step="0.1"></label>
-            <label style="font-size:0.78rem; font-weight:600;">체지방량 (kg) <input type="number" id="edit-fat" value="${record.fat !== null && record.fat !== undefined ? record.fat : ''}" step="0.1"></label>
-            <label style="font-size:0.78rem; font-weight:600;">BMI <input type="number" id="edit-bmi" value="${record.bmi !== null && record.bmi !== undefined ? record.bmi : ''}" step="0.1"></label>
-            <label style="font-size:0.78rem; font-weight:600;">체지방률 (%) <input type="number" id="edit-fatpct" value="${record.fatPct !== null && record.fatPct !== undefined ? record.fatPct : ''}" step="0.1"></label>
-        `;
-
-        document.getElementById('inbody-edit-modal').classList.add('active');
-    }
-
-    function closeInbodyEditModal() {
-        document.getElementById('inbody-edit-modal').classList.remove('active');
-    }
-
-    function saveInbodyEdit() {
-        if (selectedInbodyIdx === null) return;
-        const record = inbodyRecords[selectedInbodyIdx];
-
-        const wVal = document.getElementById('edit-weight').value.trim();
-        const mVal = document.getElementById('edit-muscle').value.trim();
-        const fVal = document.getElementById('edit-fat').value.trim();
-        const bmiVal = document.getElementById('edit-bmi').value.trim();
-        const fatpctVal = document.getElementById('edit-fatpct').value.trim();
-
-        record.weight = wVal !== '' ? parseFloat(wVal) : null;
-        record.muscle = mVal !== '' ? parseFloat(mVal) : null;
-        record.fat = fVal !== '' ? parseFloat(fVal) : null;
-        record.bmi = bmiVal !== '' ? parseFloat(bmiVal) : null;
-        record.fatPct = fatpctVal !== '' ? parseFloat(fatpctVal) : null;
-
-        saveData();
-        updateChart();
-        closeInbodyEditModal();
-    }
-
-    function deleteInbodyEdit() {
-        if (selectedInbodyIdx === null) return;
-        if (confirm('해당 인바디 기록을 삭제할까요?')) {
-            inbodyRecords.splice(selectedInbodyIdx, 1);
-            saveData();
-            updateChart();
-            closeInbodyEditModal();
-        }
     }
 </script>
 
