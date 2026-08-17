@@ -17,12 +17,14 @@
             --border-main: #eef0f2;
             
             --color-sora: #7b9acc;
-            --color-forest: #719a84;
-            --color-dahong: #d98282;
-            --color-pt-bg: #fffbeb; 
-            --color-pt-border: #000000; 
             --color-sat: #6b82a8;
-            --color-bright-blue: #2563eb; 
+            --color-bright-blue: #2563eb;
+
+            /* 버튼/태그 톤온톤 계열 (상체 색상 기준) */
+            --color-tag-pt: #e2e8f0;      /* 제일 연함 */
+            --color-tag-upper: #93c5fd;   /* 상체 */
+            --color-tag-lower: #3b82f6;   /* 하체 */
+            --color-tag-cardio: #1d4ed8;  /* 유산소 (제일 진함) */
 
             --radius-md: 8px;
             --radius-btn: 4px;
@@ -104,9 +106,18 @@
         .calendar-day.other-month .holiday-name { color: #fca5a5 !important; opacity: 0.5; }
         .calendar-day.other-month .tag-pill { opacity: 0.25 !important; }
 
-        /* 오늘 날짜 표시: 파란 배경 대신 깔끔한 레드 도트 포인트로 변경 */
+        /* 오늘 날짜 표시: 숫자의 오른쪽 (가운데) 살짝 진한 회색 점 */
+        .calendar-day.is-today .day-number-container { display: inline-flex; align-items: center; }
         .calendar-day.is-today .day-number { font-weight: 800; color: #111; }
-        .calendar-day.is-today .day-number::after { content: ''; display: inline-block; width: 4px; height: 4px; background-color: #ef4444; border-radius: 50%; margin-left: 2px; vertical-align: top; }
+        .calendar-day.is-today .day-number::after { 
+            content: ''; 
+            display: inline-block; 
+            width: 4px; 
+            height: 4px; 
+            background-color: #64748b; 
+            border-radius: 50%; 
+            margin-left: 3px; 
+        }
 
         .calendar-day.has-workout { background-color: #f4f7fb; }
         .day-header-row { display: flex; flex-direction: column; align-items: flex-start; line-height: 1; }
@@ -117,11 +128,12 @@
 
         .day-center-wrapper { width: 100%; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; }
         
-        .tag-pill { display: flex; align-items: center; justify-content: center; height: 13px; width: 100%; border-radius: 10px; font-size: 0.55rem; font-weight: 600; color: #ffffff; text-align: center; }
-        .tag-pt { background-color: var(--color-pt-bg); color: #000000; border: 1px solid var(--color-pt-border); height: 13px; }
-        .tag-upper { background-color: var(--color-sora); }
-        .tag-lower { background-color: var(--color-forest); }
-        .tag-cardio { background-color: var(--color-dahong); }
+        /* 태그 스타일 통일 (테두리 없음, 진하기 차이) */
+        .tag-pill { display: flex; align-items: center; justify-content: center; height: 13px; width: 100%; border-radius: 10px; font-size: 0.55rem; font-weight: 600; text-align: center; border: none; }
+        .tag-pt { background-color: var(--color-tag-pt); color: #334155; }
+        .tag-upper { background-color: var(--color-tag-upper); color: #1e3a8a; }
+        .tag-lower { background-color: var(--color-tag-lower); color: #ffffff; }
+        .tag-cardio { background-color: var(--color-tag-cardio); color: #ffffff; }
 
         .achievement-container { text-align: center; margin-top: 16px; }
         .achievement-text { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
@@ -139,17 +151,14 @@
         .modal-header h3 { margin: 0 0 14px 0; font-size: 1rem; font-weight: 700; }
 
         .tag-selector { display: flex; gap: 6px; margin-bottom: 12px; }
-        .tag-btn { flex: 1; height: 34px; border-radius: 17px; border: none; font-size: 0.8rem; font-weight: 600; color: #ffffff; opacity: 0.4; }
-        .tag-btn.selected { opacity: 1; }
+        .tag-btn { flex: 1; height: 34px; border-radius: 17px; border: none; font-size: 0.8rem; font-weight: 600; opacity: 0.4; }
+        .tag-btn.selected { opacity: 1; font-weight: 700; }
         
-        /* PT 버튼: 연한 노랑 배경 & 검정 테두리 */
-        .btn-pt { background-color: var(--color-pt-bg); color: #000000; border: 1px solid var(--color-pt-border); }
-        .btn-pt.selected { opacity: 1; background-color: #fef08a; color: #000000; border: 1.5px solid #000000; font-weight: 700; }
-        .btn-upper { background-color: var(--color-sora); }
-        .btn-lower { background-color: var(--color-forest); }
-        .btn-cardio { background-color: var(--color-dahong); }
+        .btn-pt { background-color: var(--color-tag-pt); color: #334155; }
+        .btn-upper { background-color: var(--color-tag-upper); color: #1e3a8a; }
+        .btn-lower { background-color: var(--color-tag-lower); color: #ffffff; }
+        .btn-cardio { background-color: var(--color-tag-cardio); color: #ffffff; }
 
-        /* 루틴 불러오기 버튼 연회색 스타일 */
         .btn-routine-load { font-size: 0.75rem; background: #e5e7eb; color: #374151; border: 1px solid #d1d5db; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
 
         .modal-save-btn { width: 100%; margin-top: 14px; padding: 11px; background: #2b2b2b; color: #ffffff; border: none; border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; }
@@ -166,12 +175,18 @@
 
         .chart-container { position: relative; height: 210px; width: 100%; margin: 10px 0; cursor: pointer; }
 
-        /* 인바디/BMI 가이드 안내 영역 */
+        /* 인바디/BMI 안내 카드 */
         .reference-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-top: 10px; font-size: 0.76rem; color: #475569; }
-        .reference-title { font-weight: 700; color: #1e293b; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .reference-title { font-weight: 700; color: #1e293b; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .reference-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px stroke #f1f5f9; }
-        .bmi-range-bar { display: flex; border-radius: 6px; overflow: hidden; margin-top: 8px; font-size: 0.68rem; font-weight: 700; text-align: center; color: white; }
-        .bmi-item { padding: 6px 2px; }
+        
+        /* 눈금 형태의 소프트한 BMI 범주 바 */
+        .bmi-ticks-container { margin-top: 8px; }
+        .bmi-ticks-bar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: #e2e8f0; }
+        .bmi-tick-seg { height: 100%; }
+        .bmi-tick-labels { display: flex; margin-top: 6px; font-size: 0.68rem; color: #64748b; text-align: center; font-weight: 600; }
+        .bmi-tick-item { flex: 1; border-left: 2px solid #ffffff; padding-top: 2px; }
+        .bmi-tick-item:first-child { border-left: none; }
 
         .goal-section { background: #f9fbfd; border: 1px solid #e1e9f5; padding: 18px 14px; border-radius: 12px; margin-top: 14px; text-align: center; position: relative; }
         .goal-text-title { font-size: 0.95rem; font-weight: 400; color: #71717a; margin-bottom: 8px; }
@@ -183,22 +198,26 @@
         textarea.diary-input { width: 100%; height: 60px; border: 1px solid #e1e4e8; border-radius: 6px; padding: 8px; font-size: 0.78rem; margin-top: 4px; resize: none; background: #fafafa; box-sizing: border-box; }
         textarea.diary-input::placeholder { color: #b0b0b8; font-size: 0.78rem; }
 
-        .list-modal-card { background: #f9f9fa; border: 1px solid var(--border-main); border-radius: 6px; padding: 10px; margin-bottom: 8px; font-size: 0.78rem; }
-        .list-modal-card .head { color: var(--color-sora); font-weight: 700; margin-bottom: 4px; }
+        /* 전체보기 카드 스타일 & 우측 상단/하단 수정 아이콘 */
+        .list-modal-card { position: relative; background: #f9f9fa; border: 1px solid var(--border-main); border-radius: 8px; padding: 12px; margin-bottom: 10px; font-size: 0.78rem; }
+        .list-modal-card .head { color: var(--color-sora); font-weight: 700; margin-bottom: 6px; font-size: 0.82rem; }
+        .edit-icon-btn { position: absolute; right: 10px; top: 10px; background: none; border: none; padding: 4px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .edit-icon-btn svg { width: 16px; height: 16px; stroke: #64748b; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-        .routine-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #ffffff; border: 1px solid var(--border-main); border-radius: 6px; margin-bottom: 6px; }
+        .routine-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #ffffff; border: 1px solid var(--border-main); border-radius: 6px; margin-bottom: 6px; }
 
-        /* 사이드 슬라이드 드로어 메뉴 스타일 */
+        /* 사이드 드로어 메뉴 스타일 */
         .drawer-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1100; opacity: 0; transition: opacity 0.25s ease; }
         .drawer-overlay.active { display: block; opacity: 1; }
         .drawer-content { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: #ffffff; z-index: 1200; transition: right 0.25s ease; padding: 24px 18px; box-shadow: -2px 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .drawer-overlay.active .drawer-content { right: 0; }
         .drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-main); padding-bottom: 12px; margin-bottom: 16px; }
-        .drawer-header h3 { margin: 0; font-size: 1.1rem; }
         .drawer-menu-list { display: flex; flex-direction: column; gap: 8px; flex: 1; }
-        .drawer-menu-item { display: flex; align-items: center; padding: 12px; border-radius: 8px; background: #f8fafc; font-size: 0.88rem; font-weight: 600; color: #334155; border: none; text-align: left; width: 100%; }
+        .drawer-menu-item { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 8px; background: #f8fafc; font-size: 0.88rem; font-weight: 600; color: #334155; border: none; text-align: left; width: 100%; }
+        .drawer-menu-item svg { width: 18px; height: 18px; stroke: #64748b; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
         .drawer-menu-item:active { background: #e2e8f0; }
-        .user-info-box { background: #f1f5f9; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 0.8rem; line-height: 1.5; color: #475569; }
+
+        .icon-silhouette { width: 18px; height: 18px; stroke: #64748b; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     </style>
 </head>
 <body>
@@ -236,7 +255,8 @@
     <div id="main-screen" style="display: none;">
         <header>
             <h1>운동 기록</h1>
-            <button class="my-icon-btn" onclick="toggleDrawer(true)" aria-label="메뉴 열기">
+            <!-- 작대기 세 개 표시만 남겨둠 -->
+            <button class="my-icon-btn" onclick="toggleDrawer(true)" aria-label="메뉴">
                 <svg viewBox="0 0 24 24">
                     <line x1="3" y1="12" x2="21" y2="12"></line>
                     <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -263,12 +283,12 @@
                 <div class="achievement-text">
                     이번 달 <span class="blue-highlight" id="days-in-month">0일</span> 중 <span class="blue-highlight" id="workout-days">0일</span><span id="workout-percent" class="percent-subtext">(0%)</span> 운동했어요!
                 </div>
-                <div class="quote-text" id="quote-text-display">역시 오늘도 해낼 줄 알았어요!</div>
+                <div class="quote-text" id="quote-text-display">오늘도 차곡차곡 목표를 향해 나아가고 있어요!</div>
             </div>
 
             <div class="calendar-action-btns">
-                <button class="calendar-action-btn" onclick="openFullListModal()">운동목록 전체 보기</button>
-                <button class="calendar-action-btn" onclick="openFullDiaryModal()">운동일기 전체 보기</button>
+                <button class="calendar-action-btn" onclick="openFullListModal()">운동 목록 전체 보기</button>
+                <button class="calendar-action-btn" onclick="openFullDiaryModal()">운동 일기 전체 보기</button>
             </div>
         </div>
 
@@ -310,10 +330,10 @@
                 <canvas id="inbodyChart"></canvas>
             </div>
 
-            <!-- 정상 범위 가이드 카드 (골격근/체지방) -->
+            <!-- 정상 범위 가이드 카드 (이모티콘 제거) -->
             <div id="mf-reference-card" class="reference-card">
                 <div class="reference-title">
-                    <span>💡 권장 정상 범위 (<span id="user-info-ref-label">성별/신체 기반</span>)</span>
+                    <span>권장 정상 범위 (<span id="user-info-ref-label">성별/신체 기반</span>)</span>
                 </div>
                 <div class="reference-row">
                     <span>체지방량</span>
@@ -325,14 +345,22 @@
                 </div>
             </div>
 
-            <!-- BMI 범주 가이드 바 (비만 분석) -->
+            <!-- BMI 범주 가이드 바 (이모티콘 제거, 안 쨍한 파스텔톤, 눈금 표기, 괄호 제거) -->
             <div id="ob-reference-card" class="reference-card" style="display:none;">
-                <div class="reference-title"><span>📊 BMI 범주 구분기준</span></div>
-                <div class="bmi-range-bar">
-                    <div class="bmi-item" style="background:#60a5fa; flex:18.5;">저체중<br>(&lt;18.5)</div>
-                    <div class="bmi-item" style="background:#34d399; flex:4.5;">정상<br>(18.5~22.9)</div>
-                    <div class="bmi-item" style="background:#fbbf24; flex:2;">과체중<br>(23~24.9)</div>
-                    <div class="bmi-item" style="background:#f87171; flex:10;">비만<br>(&ge;25)</div>
+                <div class="reference-title"><span>BMI 범주 구분 기준</span></div>
+                <div class="bmi-ticks-container">
+                    <div class="bmi-ticks-bar">
+                        <div style="background:#93c5fd; flex: 18.5;" class="bmi-tick-seg"></div>
+                        <div style="background:#86efac; flex: 4.4;" class="bmi-tick-seg"></div>
+                        <div style="background:#fde047; flex: 2;" class="bmi-tick-seg"></div>
+                        <div style="background:#fca5a5; flex: 10;" class="bmi-tick-seg"></div>
+                    </div>
+                    <div class="bmi-tick-labels">
+                        <div class="bmi-tick-item">저체중<br>~ 18.4</div>
+                        <div class="bmi-tick-item">정상<br>18.5 ~ 22.9</div>
+                        <div class="bmi-tick-item">과체중<br>23.0 ~ 24.9</div>
+                        <div class="bmi-tick-item">비만<br>25.0 ~</div>
+                    </div>
                 </div>
             </div>
 
@@ -357,21 +385,33 @@
 <div class="drawer-overlay" id="drawer-overlay" onclick="toggleDrawer(false)">
     <div class="drawer-content" onclick="event.stopPropagation()">
         <div class="drawer-header">
-            <h3>메뉴</h3>
+            <!-- 글씨 대신 작대기 세 개 아이콘 적용 -->
+            <svg class="icon-silhouette" style="width:22px; height:22px;" viewBox="0 0 24 24">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
             <button class="close-modal" style="position:static;" onclick="toggleDrawer(false)">×</button>
-        </div>
-        
-        <div class="user-info-box">
-            <div><strong>이름:</strong> <span id="drawer-user-name">-</span></div>
-            <div><strong>성별:</strong> <span id="drawer-user-gender">-</span></div>
-            <div><strong>나이:</strong> 만 <span id="drawer-user-age">-</span>세</div>
-            <div><strong>이메일:</strong> <span id="drawer-user-email">-</span></div>
         </div>
 
         <div class="drawer-menu-list">
-            <button class="drawer-menu-item" onclick="openMyPageModal(); toggleDrawer(false);">👤 정보 및 목표 관리</button>
-            <button class="drawer-menu-item" onclick="openRoutineManageModal(); toggleDrawer(false);">📋 나만의 루틴 관리</button>
-            <button class="drawer-menu-item" style="margin-top:auto; color:#ef4444;" onclick="handleLogout()">🚪 로그아웃</button>
+            <!-- 깔끔한 회색 실루엣 아이콘 통일 및 3개 메인 메뉴 구립 -->
+            <button class="drawer-menu-item" onclick="openInfoModal(); toggleDrawer(false);">
+                <svg class="icon-silhouette" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                정보 관리
+            </button>
+            <button class="drawer-menu-item" onclick="openGoalModal(); toggleDrawer(false);">
+                <svg class="icon-silhouette" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                목표 관리
+            </button>
+            <button class="drawer-menu-item" onclick="openRoutineManageModal(); toggleDrawer(false);">
+                <svg class="icon-silhouette" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                루틴 관리
+            </button>
+            <button class="drawer-menu-item" style="margin-top:auto; color:#ef4444;" onclick="handleLogout()">
+                <svg class="icon-silhouette" style="stroke:#ef4444;" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                로그아웃
+            </button>
         </div>
     </div>
 </div>
@@ -437,13 +477,21 @@
     </div>
 </div>
 
-<!-- 정보 및 목표 관리 모달 -->
-<div class="modal" id="mypage-modal">
+<!-- 1. 정보 관리 모달 (이름, 성별, 나이, 이메일, 키 등) -->
+<div class="modal" id="info-modal">
     <div class="modal-content">
-        <button class="close-modal" onclick="closeMyPageModal()">×</button>
-        <div class="modal-header"><h3>정보 및 목표 관리</h3></div>
+        <button class="close-modal" onclick="closeInfoModal()">×</button>
+        <div class="modal-header"><h3>정보 관리</h3></div>
 
-        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:12px;">
+            <div>
+                <label style="font-size:0.75rem; color:#666;">이름</label>
+                <input type="text" id="info-name-input" class="auth-input" style="margin-top:2px;">
+            </div>
+            <div>
+                <label style="font-size:0.75rem; color:#666;">이메일</label>
+                <input type="text" id="info-email-input" class="auth-input" style="margin-top:2px; background:#f1f5f9;" readonly>
+            </div>
             <div>
                 <label style="font-size:0.75rem; color:#666;">성별</label>
                 <div class="gender-select-group" style="margin-top:2px;">
@@ -453,39 +501,64 @@
             </div>
             <div>
                 <label style="font-size:0.75rem; color:#666;">키(cm)</label>
-                <input type="number" id="my-height-input" class="auth-input" placeholder="키(cm)" style="margin:2px 0 0 0;">
-            </div>
-            <div>
-                <label style="font-size:0.75rem; color:#666;">목표 체중(kg)</label>
-                <input type="number" id="my-target-input" class="auth-input" placeholder="목표 체중(kg)" style="margin:2px 0 0 0;">
-            </div>
-            <div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label style="font-size:0.75rem; color:#666;">목표 달성 D-day 날짜</label>
-                    <button type="button" class="reset-dday-btn" onclick="clearDdayInput()">디데이 초기화</button>
-                </div>
-                <input type="date" id="my-target-date-input" class="auth-input" style="margin:2px 0 0 0;">
+                <input type="number" id="info-height-input" class="auth-input" placeholder="키(cm)" style="margin-top:2px;">
             </div>
         </div>
         
-        <button class="auth-btn btn-primary" onclick="updateProfileSettings()">저장</button>
+        <button class="auth-btn btn-primary" onclick="saveInfoSettings()">저장</button>
     </div>
 </div>
 
-<!-- 루틴 관리 모달 -->
+<!-- 2. 목표 관리 모달 (목표 체중, 디데이 정렬 문제 해결) -->
+<div class="modal" id="goal-modal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeGoalModal()">×</button>
+        <div class="modal-header"><h3>목표 관리</h3></div>
+
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:12px;">
+            <div>
+                <label style="font-size:0.75rem; color:#666;">목표 체중(kg)</label>
+                <input type="number" id="goal-target-weight-input" class="auth-input" placeholder="목표 체중(kg)" style="margin-top:2px;">
+            </div>
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <label style="font-size:0.75rem; color:#666;">목표 달성 D-day 날짜</label>
+                    <button type="button" class="reset-dday-btn" onclick="clearDdayInput()">디데이 초기화</button>
+                </div>
+                <!-- 화면 밖으로 나가지 않도록 100% width 고정 및 레이아웃 조정 -->
+                <input type="date" id="goal-target-date-input" class="auth-input" style="margin-top:2px; width:100%; box-sizing:border-box;">
+            </div>
+        </div>
+        
+        <button class="auth-btn btn-primary" onclick="saveGoalSettings()">저장</button>
+    </div>
+</div>
+
+<!-- 3. 나의 루틴 관리 모달 (메인 목록 우선 표출 + 팝업 생성 방식) -->
 <div class="modal" id="routine-modal">
     <div class="modal-content">
         <button class="close-modal" onclick="closeRoutineManageModal()">×</button>
-        <div class="modal-header"><h3>루틴 관리</h3></div>
+        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; padding-right:24px;">
+            <h3 style="margin:0;">나의 루틴</h3>
+            <button type="button" class="btn-routine-load" style="background:var(--color-bright-blue); color:white; border:none; padding:5px 10px;" onclick="openAddRoutineModal()">+ 루틴 추가</button>
+        </div>
+
+        <div id="routine-list-container" style="max-height:320px; overflow-y:auto; margin-top:10px;"></div>
+    </div>
+</div>
+
+<!-- 루틴 추가 팝업 모달 -->
+<div class="modal" id="add-routine-modal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeAddRoutineModal()">×</button>
+        <div class="modal-header"><h3>루틴 추가</h3></div>
         
         <div style="margin-bottom:12px;">
             <input type="text" id="routine-name-input" class="auth-input" placeholder="루틴 이름(예: 월요일 하체 루틴)" style="margin-bottom:6px;">
-            <textarea id="routine-content-input" class="diary-input" style="height:80px; margin-top:0;" placeholder="루틴 내용을 메모장처럼 작성해 보세요&#10;(예: 벤치프레스 40kg 10회 3세트)"></textarea>
-            <button class="auth-btn btn-primary" onclick="saveNewRoutine()" style="margin-top:6px;">루틴 저장</button>
+            <!-- '메모장처럼' 워딩 삭제 -->
+            <textarea id="routine-content-input" class="diary-input" style="height:90px; margin-top:0;" placeholder="루틴 내용을 작성해 보세요&#10;(예: 벤치프레스 40kg 10회 3세트)"></textarea>
+            <button class="auth-btn btn-primary" onclick="saveNewRoutine()" style="margin-top:8px;">저장</button>
         </div>
-
-        <div style="font-size:0.8rem; font-weight:700; margin-bottom:6px;">내 루틴 목록</div>
-        <div id="routine-list-container" style="max-height:200px; overflow-y:auto;"></div>
     </div>
 </div>
 
@@ -511,19 +584,19 @@
             <button class="tag-btn btn-cardio" id="btn-cardio" onclick="toggleTag('유산소')">유산소</button>
         </div>
 
-        <!-- 웨이트 기록 및 루틴 버튼 (워딩 정리 완료) -->
+        <!-- '(메모장 형식)' 삭제 조치 -->
         <div id="detailed-inputs">
             <div style="display:flex; justify-content:space-between; align-items:center; margin:8px 0 4px 0;">
                 <span style="font-size:0.8rem; font-weight:700;">웨이트 기록</span>
                 <button type="button" class="btn-routine-load" onclick="openRoutineSelectModal()">루틴 불러오기</button>
             </div>
-            <textarea id="weight-text-input" class="diary-input" style="height:70px;" placeholder="웨이트 내용을 작성하세요(메모장 형식)"></textarea>
+            <textarea id="weight-text-input" class="diary-input" style="height:70px;" placeholder="웨이트 내용을 작성하세요"></textarea>
         </div>
 
-        <!-- 유산소 기록 (워딩 정리 완료) -->
+        <!-- '(메모장 형식)' 삭제 조치 -->
         <div id="cardio-inputs">
             <div style="font-size:0.8rem; font-weight:700; margin:10px 0 4px 0;">유산소 기록</div>
-            <textarea id="cardio-text-input" class="diary-input" style="height:60px;" placeholder="유산소 내용을 작성하세요(메모장 형식)"></textarea>
+            <textarea id="cardio-text-input" class="diary-input" style="height:60px;" placeholder="유산소 내용을 작성하세요"></textarea>
         </div>
 
         <div style="margin-top:10px;">
@@ -535,20 +608,20 @@
     </div>
 </div>
 
-<!-- 운동 전체목록 모달 -->
+<!-- 운동 목록 전체 보기 모달 -->
 <div class="modal" id="full-list-modal">
     <div class="modal-content">
         <button class="close-modal" onclick="document.getElementById('full-list-modal').classList.remove('active')">×</button>
-        <div class="modal-header"><h3>전체 운동 수행 목록</h3></div>
+        <div class="modal-header"><h3>운동 목록 전체 보기</h3></div>
         <div id="full-list-container" style="max-height:60vh; overflow-y:auto;"></div>
     </div>
 </div>
 
-<!-- 운동일기 전체목록 모달 -->
+<!-- 운동 일기 전체 보기 모달 -->
 <div class="modal" id="full-diary-modal">
     <div class="modal-content">
         <button class="close-modal" onclick="document.getElementById('full-diary-modal').classList.remove('active')">×</button>
-        <div class="modal-header"><h3>전체 운동 일기</h3></div>
+        <div class="modal-header"><h3>운동 일기 전체 보기</h3></div>
         <div id="full-diary-container" style="max-height:60vh; overflow-y:auto;"></div>
     </div>
 </div>
@@ -585,12 +658,13 @@
     let selectedSignupGender = 'female';
     let selectedMyGender = 'female';
 
+    // '당신' 키워드가 제외된 오글거리지 않는 응원 메시지
     const MOTIVATIONAL_QUOTES = [
-        "역시 오늘도 해낼 줄 알았어요! ✨",
+        "오늘도 차곡차곡 목표를 향해 나아가고 있어요! ✨",
         "오늘도 멋지게 해냈네요, 정말 대단해요! 👍",
         "차곡차곡 쌓인 오늘의 노력이 빛을 발할 거예요! 🔥",
-        "당신이라면 잘 해낼 거라 믿고 있었어요! 💪",
-        "오늘도 한 걸음 더 나아간 자신을 자랑스러워해 주세요! 🙌"
+        "멋지게 완주할 거라 믿고 있었어요! 💪",
+        "오늘도 한 걸음 더 나아간 스스로를 자랑스러워해 주세요! 🙌"
     ];
 
     const HOLIDAYS = {
@@ -630,10 +704,6 @@
     function toggleDrawer(open) {
         const overlay = document.getElementById('drawer-overlay');
         if (open) {
-            document.getElementById('drawer-user-name').innerText = userProfile.first_name || userProfile.name || '-';
-            document.getElementById('drawer-user-gender').innerText = userProfile.gender === 'female' ? '여성' : '남성';
-            document.getElementById('drawer-user-age').innerText = userProfile.age || '-';
-            document.getElementById('drawer-user-email').innerText = currentUser?.email || '-';
             overlay.classList.add('active');
         } else {
             overlay.classList.remove('active');
@@ -728,14 +798,23 @@
     function openSignupModal() { document.getElementById('signup-modal').classList.add('active'); }
     function closeSignupModal() { document.getElementById('signup-modal').classList.remove('active'); }
 
-    function openMyPageModal() {
+    // 정보 관리 모달
+    function openInfoModal() {
+        document.getElementById('info-name-input').value = userProfile.name || userProfile.first_name || '';
+        document.getElementById('info-email-input').value = currentUser?.email || '';
         selectMyGender(userProfile.gender || 'female');
-        document.getElementById('my-height-input').value = userProfile.height;
-        document.getElementById('my-target-input').value = userProfile.target_weight;
-        document.getElementById('my-target-date-input').value = userProfile.target_date || '';
-        document.getElementById('mypage-modal').classList.add('active');
+        document.getElementById('info-height-input').value = userProfile.height || '';
+        document.getElementById('info-modal').classList.add('active');
     }
-    function closeMyPageModal() { document.getElementById('mypage-modal').classList.remove('active'); }
+    function closeInfoModal() { document.getElementById('info-modal').classList.remove('active'); }
+
+    // 목표 관리 모달
+    function openGoalModal() {
+        document.getElementById('goal-target-weight-input').value = userProfile.target_weight || '';
+        document.getElementById('goal-target-date-input').value = userProfile.target_date || '';
+        document.getElementById('goal-modal').classList.add('active');
+    }
+    function closeGoalModal() { document.getElementById('goal-modal').classList.remove('active'); }
 
     async function handleSignUp() {
         const lastName = document.getElementById('signup-lastname').value.trim();
@@ -982,7 +1061,7 @@
         if (dayOfWeek === 0 || holidayName) colorClass = 'sunday';
         else if (dayOfWeek === 6) colorClass = 'saturday';
 
-        headerRow.innerHTML = `<span class="day-number ${colorClass}">${d}</span>`;
+        headerRow.innerHTML = `<div class="day-number-container"><span class="day-number ${colorClass}">${d}</span></div>`;
         if (holidayName) headerRow.innerHTML += `<span class="holiday-name">${holidayName}</span>`;
         dayEl.appendChild(headerRow);
 
@@ -1046,6 +1125,11 @@
         document.getElementById('workout-modal').classList.add('active');
     }
 
+    function openWorkoutModalByDateStr(dateStr) {
+        const parts = dateStr.split('-');
+        openWorkoutModal(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    }
+
     async function saveAndCloseWorkoutModal() {
         if (selectedDateStr && tempModalData) {
             tempModalData.weight_text = document.getElementById('weight-text-input').value.trim();
@@ -1057,6 +1141,10 @@
         }
         document.getElementById('workout-modal').classList.remove('active');
         renderCalendar();
+        
+        // 전체보기 모달이 열려있는 상태라면 새로고침
+        if(document.getElementById('full-list-modal').classList.contains('active')) openFullListModal();
+        if(document.getElementById('full-diary-modal').classList.contains('active')) openFullDiaryModal();
     }
 
     function cancelWorkoutModal() {
@@ -1094,6 +1182,15 @@
         document.getElementById('routine-modal').classList.remove('active');
     }
 
+    function openAddRoutineModal() {
+        document.getElementById('routine-name-input').value = '';
+        document.getElementById('routine-content-input').value = '';
+        document.getElementById('add-routine-modal').classList.add('active');
+    }
+    function closeAddRoutineModal() {
+        document.getElementById('add-routine-modal').classList.remove('active');
+    }
+
     async function saveNewRoutine() {
         const name = document.getElementById('routine-name-input').value.trim();
         const content = document.getElementById('routine-content-input').value.trim();
@@ -1102,13 +1199,13 @@
         userRoutines.push({ id: Date.now(), name, content });
         await supabase.auth.updateUser({ data: { routines: userRoutines } });
 
-        document.getElementById('routine-name-input').value = '';
-        document.getElementById('routine-content-input').value = '';
+        closeAddRoutineModal();
         renderRoutineList();
-        alert('루틴이 등록되었습니다.');
+        alert('루틴이 추가되었습니다.');
     }
 
     async function deleteRoutine(id) {
+        if(!confirm('루틴을 삭제하시겠습니까?')) return;
         userRoutines = userRoutines.filter(r => r.id !== id);
         await supabase.auth.updateUser({ data: { routines: userRoutines } });
         renderRoutineList();
@@ -1118,17 +1215,17 @@
         const container = document.getElementById('routine-list-container');
         container.innerHTML = '';
         if (userRoutines.length === 0) {
-            container.innerHTML = '<div style="font-size:0.8rem; color:#888; text-align:center; padding:10px;">등록된 루틴이 없습니다.</div>';
+            container.innerHTML = '<div style="font-size:0.8rem; color:#888; text-align:center; padding:30px 10px;">등록된 루틴이 없습니다.<br>우측 상단버튼을 통해 루틴을 추가해 보세요.</div>';
             return;
         }
         userRoutines.forEach(r => {
             container.innerHTML += `
                 <div class="routine-item">
                     <div>
-                        <strong style="font-size:0.82rem; color:#333;">${r.name}</strong>
-                        <div style="font-size:0.75rem; color:#666; white-space:pre-wrap;">${r.content}</div>
+                        <strong style="font-size:0.85rem; color:#333;">${r.name}</strong>
+                        <div style="font-size:0.75rem; color:#666; white-space:pre-wrap; margin-top:2px;">${r.content}</div>
                     </div>
-                    <button type="button" class="del-log" onclick="deleteRoutine(${r.id})">삭제</button>
+                    <button type="button" style="background:none; border:none; color:#ef4444; font-size:0.75rem; font-weight:600;" onclick="deleteRoutine(${r.id})">삭제</button>
                 </div>
             `;
         });
@@ -1169,15 +1266,21 @@
         closeRoutineSelectModal();
     }
 
+    // 전체 운동 수행 목록 (수정 아이콘 적용 및 명칭 변경)
     function openFullListModal() {
         const container = document.getElementById('full-list-container');
         container.innerHTML = '';
-        const sortedDates = Object.keys(workoutData).sort();
+        const sortedDates = Object.keys(workoutData).sort().reverse();
 
         sortedDates.forEach(date => {
             const data = workoutData[date];
             if (data.weight_text || data.cardio_text) {
-                let html = `<div class="list-modal-card"><div class="head">${date}</div>`;
+                let html = `
+                    <div class="list-modal-card">
+                        <button class="edit-icon-btn" onclick="openWorkoutModalByDateStr('${date}')" title="수정/삭제">
+                            <svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        </button>
+                        <div class="head">${date}</div>`;
                 if (data.weight_text) html += `<div style="white-space:pre-wrap; margin-bottom:4px;"><b>[웨이트]</b>\n${data.weight_text}</div>`;
                 if (data.cardio_text) html += `<div style="white-space:pre-wrap;"><b>[유산소]</b>\n${data.cardio_text}</div>`;
                 html += `</div>`;
@@ -1188,15 +1291,23 @@
         document.getElementById('full-list-modal').classList.add('active');
     }
 
+    // 전체 운동 일기 (수정 아이콘 적용 및 명칭 변경)
     function openFullDiaryModal() {
         const container = document.getElementById('full-diary-container');
         container.innerHTML = '';
-        const sortedDates = Object.keys(workoutData).sort();
+        const sortedDates = Object.keys(workoutData).sort().reverse();
 
         sortedDates.forEach(date => {
             const diary = workoutData[date]?.diary;
             if (diary) {
-                container.innerHTML += `<div class="list-modal-card"><div class="head">${date}</div><div style="color:#333; white-space:pre-wrap;">${diary}</div></div>`;
+                container.innerHTML += `
+                    <div class="list-modal-card">
+                        <button class="edit-icon-btn" onclick="openWorkoutModalByDateStr('${date}')" title="수정/삭제">
+                            <svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        </button>
+                        <div class="head">${date}</div>
+                        <div style="color:#333; white-space:pre-wrap;">${diary}</div>
+                    </div>`;
             }
         });
         if (!container.innerHTML) container.innerHTML = '<div style="font-size:0.8rem; color:var(--text-sub); text-align:center; padding:20px;">작성된 운동 일기가 없습니다.</div>';
@@ -1334,7 +1445,6 @@
         inbodyChart.update();
     }
 
-    // 성별/키 기준 정상 인바디 범위 자동 계산
     function updateReferenceRanges() {
         const h = userProfile.height || 165;
         const g = userProfile.gender || 'female';
@@ -1403,7 +1513,7 @@
     }
 
     function clearDdayInput() {
-        document.getElementById('my-target-date-input').value = '';
+        document.getElementById('goal-target-date-input').value = '';
     }
 
     async function clearDdayGoal() {
@@ -1413,30 +1523,46 @@
         renderGoalCard();
     }
 
-    async function updateProfileSettings() {
-        const h = parseFloat(document.getElementById('my-height-input').value);
-        const tw = parseFloat(document.getElementById('my-target-input').value);
-        const td = document.getElementById('my-target-date-input').value;
+    async function saveInfoSettings() {
+        const name = document.getElementById('info-name-input').value.trim();
+        const h = parseFloat(document.getElementById('info-height-input').value);
         
+        if (name) userProfile.name = name;
         if (h) userProfile.height = h;
-        if (tw) userProfile.target_weight = tw;
         userProfile.gender = selectedMyGender;
-        userProfile.target_date = td;
 
         await supabase.auth.updateUser({
             data: { 
+                name: userProfile.name,
                 height: userProfile.height, 
-                target_weight: userProfile.target_weight,
-                gender: userProfile.gender,
-                target_date: userProfile.target_date
+                gender: userProfile.gender
             }
         });
 
         updateReferenceRanges();
         updateChart();
-        renderGoalCard();
-        closeMyPageModal();
+        closeInfoModal();
         alert('정보가 저장되었습니다.');
+    }
+
+    async function saveGoalSettings() {
+        const tw = parseFloat(document.getElementById('goal-target-weight-input').value);
+        const td = document.getElementById('goal-target-date-input').value;
+        
+        if (tw) userProfile.target_weight = tw;
+        userProfile.target_date = td;
+
+        await supabase.auth.updateUser({
+            data: { 
+                target_weight: userProfile.target_weight,
+                target_date: userProfile.target_date
+            }
+        });
+
+        updateChart();
+        renderGoalCard();
+        closeGoalModal();
+        alert('목표가 저장되었습니다.');
     }
 </script>
 
